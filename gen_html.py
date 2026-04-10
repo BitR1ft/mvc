@@ -1,8 +1,112 @@
 #!/usr/bin/env python3
+import json
+import numpy as np
+
 PATH = '/home/runner/work/mvc/mvc/index.html'
 
+# ── 3-D graph helpers ──────────────────────────────────────────────────────
+_pid = [0]
+
+def _next_id():
+    _pid[0] += 1
+    return f'gplt{_pid[0]}'
+
+GOLD_CS  = [[0, '#e8d9b0'], [0.5, '#c8a84c'], [1, '#8b6914']]
+BLUE_CS  = [[0, '#b0cce8'], [0.5, '#4c8ac8'], [1, '#14568b']]
+GREEN_CS = [[0, '#b0e8c0'], [0.5, '#4cc870'], [1, '#1a8b3a']]
+
+def _surf(x2d, y2d, z2d, cs=None, opacity=0.85):
+    return {'type': 'surface',
+            'x': x2d, 'y': y2d, 'z': z2d,
+            'colorscale': cs or GOLD_CS,
+            'showscale': False,
+            'opacity': opacity,
+            'contours': {'x': {'highlight': False},
+                         'y': {'highlight': False},
+                         'z': {'highlight': False}}}
+
+def _layout(h):
+    return {'height': h,
+            'margin': {'l': 0, 'r': 0, 't': 28, 'b': 0},
+            'scene': {'aspectmode': 'data',
+                      'xaxis': {'showgrid': True, 'zeroline': True},
+                      'yaxis': {'showgrid': True, 'zeroline': True},
+                      'zaxis': {'showgrid': True, 'zeroline': True}},
+            'showlegend': False,
+            'paper_bgcolor': 'rgba(0,0,0,0)'}
+
+def plot3d(title, traces, height=340):
+    pid = _next_id()
+    cfg = json.dumps({'traces': traces, 'layout': _layout(height)},
+                     separators=(',', ':'))
+    return (f'<div class="graph-wrap">'
+            f'<div class="graph-title">{title}</div>'
+            f'<div id="{pid}" style="height:{height}px"></div>'
+            f'<script type="application/json" data-for="{pid}">{cfg}</script>'
+            f'</div>')
+
+def sphere_traces(cx, cy, cz, r, cs=None, n=30):
+    u = np.linspace(0, 2*np.pi, n)
+    v = np.linspace(0, np.pi, n)
+    U, V = np.meshgrid(u, v)
+    x = (cx + r*np.cos(U)*np.sin(V)).tolist()
+    y = (cy + r*np.sin(U)*np.sin(V)).tolist()
+    z = (cz + r*np.cos(V)).tolist()
+    return [_surf(x, y, z, cs)]
+
+def ellipsoid_traces(cx, cy, cz, a, b, c, cs=None, n=30):
+    u = np.linspace(0, 2*np.pi, n)
+    v = np.linspace(0, np.pi, n)
+    U, V = np.meshgrid(u, v)
+    x = (cx + a*np.cos(U)*np.sin(V)).tolist()
+    y = (cy + b*np.sin(U)*np.sin(V)).tolist()
+    z = (cz + c*np.cos(V)).tolist()
+    return [_surf(x, y, z, cs)]
+
+def paraboloid_traces(cx, cy, a2, b2, zdir=1, zoff=0, xlim=None, ylim=None, n=38):
+    ra, rb = np.sqrt(a2), np.sqrt(b2)
+    xs = np.linspace(cx - 2*ra, cx + 2*ra, n) if xlim is None else np.linspace(*xlim, n)
+    ys = np.linspace(cy - 2*rb, cy + 2*rb, n) if ylim is None else np.linspace(*ylim, n)
+    X, Y = np.meshgrid(xs, ys)
+    Z = zoff + zdir*((X - cx)**2/a2 + (Y - cy)**2/b2)
+    return [_surf(xs.tolist(), ys.tolist(), Z.tolist())]
+
+def hyperboloid1_traces(a, b, c, t_range=2.5, n=38):
+    u = np.linspace(0, 2*np.pi, n)
+    t = np.linspace(-t_range, t_range, n)
+    U, T = np.meshgrid(u, t)
+    x = (a*np.cosh(T)*np.cos(U)).tolist()
+    y = (b*np.cosh(T)*np.sin(U)).tolist()
+    z = (c*np.sinh(T)).tolist()
+    return [_surf(x, y, z)]
+
+def hyperboloid2_traces(a, b, c, t_range=2.0, n=30):
+    u = np.linspace(0, 2*np.pi, n)
+    t = np.linspace(0, t_range, n)
+    U, T = np.meshgrid(u, t)
+    x = (a*np.sinh(T)*np.cos(U)).tolist()
+    y = (b*np.sinh(T)*np.sin(U)).tolist()
+    zu = (c*np.cosh(T)).tolist()
+    zl = (-c*np.cosh(T)).tolist()
+    return [_surf(x, y, zu), _surf(x, y, zl, BLUE_CS)]
+
+def cone_traces(a, b, c, lim=2.0, n=38):
+    xs = np.linspace(-a*lim, a*lim, n)
+    ys = np.linspace(-b*lim, b*lim, n)
+    X, Y = np.meshgrid(xs, ys)
+    inner = np.sqrt((X/a)**2 + (Y/b)**2)
+    return [_surf(xs.tolist(), ys.tolist(), (c*inner).tolist()),
+            _surf(xs.tolist(), ys.tolist(), (-c*inner).tolist(), BLUE_CS)]
+
+def zfunc_traces(f, xlim, ylim, n=38):
+    xs = np.linspace(*xlim, n)
+    ys = np.linspace(*ylim, n)
+    X, Y = np.meshgrid(xs, ys)
+    Z = f(X, Y)
+    return [_surf(xs.tolist(), ys.tolist(), Z.tolist())]
+
 # ── helpers ────────────────────────────────────────────────────────────────
-def card(num, question, tags, overview, formula, steps, answer):
+def card(num, question, tags, overview, formula, steps, answer, graph=''):
     tag_html = ''.join(f'<span class="tag">{t}</span>' for t in tags)
     formula_html = f'<div class="key-formula"><strong>Formula:</strong> {formula}</div>' if formula else ''
     steps_html = ''.join(
@@ -21,6 +125,7 @@ def card(num, question, tags, overview, formula, steps, answer):
     {formula_html}
     <div class="sol-steps">{steps_html}</div>
     <div class="sol-answer"><strong>Answer:</strong> {answer}</div>
+    {graph}
   </div>
 </div>'''
 
@@ -191,7 +296,9 @@ s11_1_cards = (
          [r'Center = midpoint \(=\bigl(\frac{1+3}{2},\frac{-2+4}{2},\frac{4-12}{2}\bigr)=(2,1,-4)\).',
           r'Diameter: \(d=\sqrt{(3-1)^2+(4-(-2))^2+(-12-4)^2}=\sqrt{4+36+256}=\sqrt{296}=2\sqrt{74}\)',
           r'\(r=\sqrt{74}\). Equation: \((x-2)^2+(y-1)^2+(z+4)^2=74\).'],
-         r'\((x-2)^2+(y-1)^2+(z+4)^2=74\)')
+         r'\((x-2)^2+(y-1)^2+(z+4)^2=74\)',
+         plot3d('Sphere: center (2, 1, −4), radius √74',
+                sphere_traces(2, 1, -4, 74**0.5)))
 
   + card('Q11a', r'Show \((2,1,6)\), \((4,7,9)\), \((8,5,-6)\) are vertices of a right triangle, find area', ['distance','right triangle'],
          'Compute all three side lengths and check the Pythagorean theorem.',
@@ -254,7 +361,9 @@ s11_1_cards = (
           r'Complete: \((x-1)^2-1+(y-3)^2-9+(z-4)^2-16=-1\)',
           r'\((x-1)^2+(y-3)^2+(z-4)^2=1+9+16-1=25\)',
           r'Sphere, center \((1,3,4)\), radius \(5\).'],
-         r'Sphere; center \((1,3,4)\), radius \(5\)')
+         r'Sphere; center \((1,3,4)\), radius \(5\)',
+         plot3d('Sphere: center (1, 3, 4), radius 5',
+                sphere_traces(1, 3, 4, 5)))
 
   + card('Q47', r'Bug on sphere \(x^2+y^2+z^2+2x-2y-4z-3=0\). How close and far from origin?', ['sphere','distance'],
          'Complete the square to find center and radius; use triangle inequality.',
@@ -263,7 +372,9 @@ s11_1_cards = (
           r'Distance origin to center: \(D=\sqrt{1+1+4}=\sqrt{6}\)',
           r'Closest point on sphere: \(D-r=\sqrt{6}-3\approx-0.55\)... since \(\sqrt{6}<3\), origin is <em>inside</em> the sphere.',
           r'Closest distance: \(3-\sqrt{6}\), Farthest distance: \(3+\sqrt{6}\)'],
-         r'Closest: \(3-\sqrt{6}\), Farthest: \(3+\sqrt{6}\)')
+         r'Closest: \(3-\sqrt{6}\), Farthest: \(3+\sqrt{6}\)',
+         plot3d('Sphere: center (−1, 1, 2), radius 3',
+                sphere_traces(-1, 1, 2, 3)))
 )
 
 s11_1 = section('s11_1', '11.1 — 3D Coordinates &amp; Spheres', s11_1_concepts + s11_1_cards)
@@ -645,42 +756,58 @@ s11_7_cards = (
          [r'(a) \(\dfrac{x^2}{9}+\dfrac{y^2}{25}+\dfrac{z^2}{4}=1\): all traces ellipses → <strong>Ellipsoid</strong>',
           r'(b) \(z=x^2+4y^2\): horizontal traces ellipses, vertical traces parabolas → <strong>Elliptic Paraboloid</strong>',
           r'(c) \(\dfrac{x^2}{9}+\dfrac{y^2}{16}-\dfrac{z^2}{4}=1\): horizontal traces ellipses, one sign different → <strong>Hyperboloid of One Sheet</strong>'],
-         r'(a) Ellipsoid; (b) Elliptic Paraboloid; (c) Hyperboloid of One Sheet')
+         r'(a) Ellipsoid; (b) Elliptic Paraboloid; (c) Hyperboloid of One Sheet',
+         plot3d('(a) Ellipsoid x²/9+y²/25+z²/4=1',
+                ellipsoid_traces(0, 0, 0, 3, 5, 2))
+         + plot3d('(b) Elliptic Paraboloid z=x²+4y²',
+                  paraboloid_traces(0, 0, 1, 0.25, xlim=(-2, 2), ylim=(-1, 1)))
+         + plot3d('(c) Hyperboloid of One Sheet x²/9+y²/16−z²/4=1',
+                  hyperboloid1_traces(3, 4, 2)))
 
   + card('Q15', r'Describe \(x^2+\dfrac{y^2}{4}+\dfrac{z^2}{9}=1\)', ['ellipsoid'],
          'Identify the quadric type and semi-axes.',
          '',
          [r'All three terms positive, equals 1 → <strong>Ellipsoid</strong>',
           r'Semi-axes: \(a=1\) along \(x\), \(b=2\) along \(y\), \(c=3\) along \(z\)'],
-         r'Ellipsoid; semi-axes 1, 2, 3 along x, y, z respectively')
+         r'Ellipsoid; semi-axes 1, 2, 3 along x, y, z respectively',
+         plot3d('Ellipsoid x²+y²/4+z²/9=1  (semi-axes 1, 2, 3)',
+                ellipsoid_traces(0, 0, 0, 1, 2, 3)))
 
   + card('Q17', r'Describe \(\dfrac{x^2}{4}+\dfrac{y^2}{9}-\dfrac{z^2}{16}=1\)', ['hyperboloid'],
          'One term negative on left → hyperboloid of one sheet.',
          '',
          [r'Two positive terms, one negative → <strong>Hyperboloid of One Sheet</strong>',
           r'Axis of symmetry along \(z\)-axis (the subtracted variable).'],
-         r'Hyperboloid of One Sheet (axis along z)')
+         r'Hyperboloid of One Sheet (axis along z)',
+         plot3d('Hyperboloid of One Sheet x²/4+y²/9−z²/16=1',
+                hyperboloid1_traces(2, 3, 4)))
 
   + card('Q19', r'Describe \(4z^2=x^2+4y^2\)', ['cone'],
          'Rewrite with zero on one side to reveal the cone structure.',
          '',
          [r'Rewrite: \(\dfrac{x^2}{4}+y^2-z^2=0\) or \(z^2=\dfrac{x^2}{4}+y^2\)',
           r'Right-hand side has two variables, left has one squared → <strong>Elliptic Cone</strong> with axis along \(z\)'],
-         r'Elliptic Cone (axis along z)')
+         r'Elliptic Cone (axis along z)',
+         plot3d('Elliptic Cone 4z²=x²+4y²  (z²=x²/4+y²)',
+                cone_traces(2, 1, 1)))
 
   + card('Q21', r'Describe \(9z^2-4y^2-9x^2=36\)', ['hyperboloid'],
          'Divide by 36 to get standard form; count signs.',
          '',
          [r'Divide by 36: \(\dfrac{z^2}{4}-\dfrac{y^2}{9}-\dfrac{x^2}{4}=1\)',
           r'One positive, two negative → <strong>Hyperboloid of Two Sheets</strong> (axis along \(z\))'],
-         r'Hyperboloid of Two Sheets (axis along z)')
+         r'Hyperboloid of Two Sheets (axis along z)',
+         plot3d('Hyperboloid of Two Sheets z²/4−y²/9−x²/4=1',
+                hyperboloid2_traces(2, 3, 2)))
 
   + card('Q25', r'Describe \(4z=x^2+2y^2\)', ['paraboloid'],
          'Rewrite as z = ... to identify orientation.',
          '',
          [r'Solve for \(z\): \(z=\dfrac{x^2}{4}+\dfrac{y^2}{2}\)',
           r'Horizontal traces: ellipses; vertical traces: parabolas → <strong>Elliptic Paraboloid</strong> opening in +z direction'],
-         r'Elliptic Paraboloid opening upward (+z)')
+         r'Elliptic Paraboloid opening upward (+z)',
+         plot3d('Elliptic Paraboloid 4z=x²+2y²  (z=x²/4+y²/2)',
+                paraboloid_traces(0, 0, 4, 2, xlim=(-4, 4), ylim=(-3, 3))))
 
   + card('Q39', r'Classify \(9x^2+y^2+4z^2-18x+2y+16z=10\)', ['completing square','ellipsoid'],
          'Complete the square in each variable to get standard form.',
@@ -689,7 +816,9 @@ s11_7_cards = (
           r'Complete: \(9(x-1)^2-9+(y+1)^2-1+4(z+2)^2-16=10\)',
           r'\(9(x-1)^2+(y+1)^2+4(z+2)^2=36\) → \(\dfrac{(x-1)^2}{4}+\dfrac{(y+1)^2}{36}+\dfrac{(z+2)^2}{9}=1\)',
           r'<strong>Ellipsoid</strong> centered at \((1,-1,-2)\), semi-axes 2, 6, 3'],
-         r'Ellipsoid centered at \((1,-1,-2)\)')
+         r'Ellipsoid centered at \((1,-1,-2)\)',
+         plot3d('Ellipsoid centered at (1, −1, −2), semi-axes 2, 6, 3',
+                ellipsoid_traces(1, -1, -2, 2, 6, 3)))
 )
 
 s11_7 = section('s11_7', '11.7 — Quadric Surfaces', s11_7_concepts + s11_7_cards)
@@ -817,7 +946,12 @@ s13_1_cards = (
          [r'Need \(1-x^2-y^2\ge 0\), i.e., \(x^2+y^2\le 1\): closed unit disk.',
           r'Graph: \(z=\sqrt{1-x^2-y^2}\ge 0\); rearranging: \(x^2+y^2+z^2=1,\ z\ge 0\)',
           r'This is the <strong>upper hemisphere</strong> of the unit sphere.'],
-         r'Domain: unit disk \(x^2+y^2\le 1\); graph: upper hemisphere of unit sphere')
+         r'Domain: unit disk \(x^2+y^2\le 1\); graph: upper hemisphere of unit sphere',
+         plot3d('Upper hemisphere  z = √(1−x²−y²)',
+                zfunc_traces(lambda X, Y: np.where(X**2+Y**2 <= 1,
+                                                   np.sqrt(np.maximum(0, 1-X**2-Y**2)),
+                                                   np.nan),
+                             (-1, 1), (-1, 1))))
 
   + card('Q19', r'Domain and graph of \(f(x,y)=-\sqrt{x^2+y^2}\)', ['domain','graph'],
          'Square root of a sum of squares — always defined. Negative sign gives lower nappe.',
@@ -825,7 +959,10 @@ s13_1_cards = (
          [r'Domain: all \((x,y)\) (no restriction needed, \(x^2+y^2\ge 0\) always).',
           r'Graph: \(z=-\sqrt{x^2+y^2}\le 0\); rewrite: \(z^2=x^2+y^2,\ z\le 0\)',
           r'<strong>Lower nappe of a cone</strong> with vertex at origin, opening downward.'],
-         r'Domain: all \((x,y)\); graph: lower nappe of cone \(z^2=x^2+y^2,\,z\le0\)')
+         r'Domain: all \((x,y)\); graph: lower nappe of cone \(z^2=x^2+y^2,\,z\le0\)',
+         plot3d('Lower cone nappe  z = −√(x²+y²)',
+                zfunc_traces(lambda X, Y: -np.sqrt(X**2+Y**2),
+                             (-2, 2), (-2, 2))))
 
   + card('Q20', r'Domain and graph of \(f(x,y)=\sqrt{x^2+y^2}\)', ['domain','graph'],
          'Square root of a sum of squares — always defined.',
@@ -833,7 +970,10 @@ s13_1_cards = (
          [r'Domain: all \((x,y)\).',
           r'Graph: \(z=\sqrt{x^2+y^2}\ge 0\); i.e., \(z^2=x^2+y^2,\ z\ge 0\)',
           r'<strong>Upper nappe of a cone</strong> with vertex at origin, opening upward.'],
-         r'Domain: all \((x,y)\); graph: upper nappe of cone \(z^2=x^2+y^2,\,z\ge0\)')
+         r'Domain: all \((x,y)\); graph: upper nappe of cone \(z^2=x^2+y^2,\,z\ge0\)',
+         plot3d('Upper cone nappe  z = √(x²+y²)',
+                zfunc_traces(lambda X, Y: np.sqrt(X**2+Y**2),
+                             (-2, 2), (-2, 2))))
 
   + card('Q28', r'Level curves of \(f(x,y)=x-2y\) for \(f=k\)', ['level curves'],
          'Set f = k and describe the resulting curves.',
@@ -849,7 +989,10 @@ s13_1_cards = (
          [r'Graph: \(z=x^2+y^2\) — <strong>circular paraboloid</strong> opening upward, vertex at origin.',
           r'Level curves: \(x^2+y^2=k\) for \(k\ge 0\) — <strong>circles</strong> centered at origin with radius \(\sqrt{k}\).',
           r'For \(k<0\): no level curve (graph lies above \(xy\)-plane).'],
-         r'Graph: circular paraboloid; level curves: concentric circles \(x^2+y^2=k\)')
+         r'Graph: circular paraboloid; level curves: concentric circles \(x^2+y^2=k\)',
+         plot3d('Circular Paraboloid  z = x²+y²',
+                zfunc_traces(lambda X, Y: X**2+Y**2,
+                             (-2, 2), (-2, 2))))
 )
 
 s13_1 = section('s13_1', '13.1 — Functions of Two Variables', s13_1_concepts + s13_1_cards)
@@ -958,12 +1101,25 @@ main{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
 """ + s10_4 + s11_1 + s11_2 + s11_3 + s11_4 + s11_5 + s11_6 + s11_7 + s11_8 + s13_1 + r"""
 </main>
 <script>
+function initPlots(sec) {
+  sec.querySelectorAll('script[data-for]').forEach(s => {
+    const id = s.dataset.for;
+    const el = document.getElementById(id);
+    if (el && !el.dataset.plotted) {
+      const d = JSON.parse(s.textContent);
+      Plotly.newPlot(el, d.traces, d.layout, {responsive: true, displayModeBar: false});
+      el.dataset.plotted = '1';
+    }
+  });
+}
 document.querySelectorAll('.nav-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById(btn.dataset.sec).classList.add('active');
+    const sec = document.getElementById(btn.dataset.sec);
+    sec.classList.add('active');
+    initPlots(sec);
     if (window.MathJax) MathJax.typesetPromise();
   });
 });
@@ -973,6 +1129,7 @@ document.querySelectorAll('.concepts-toggle').forEach(btn => {
     btn.nextElementSibling.classList.toggle('hidden');
   });
 });
+initPlots(document.querySelector('.section.active'));
 if (window.MathJax) MathJax.typesetPromise();
 </script>
 </body>
