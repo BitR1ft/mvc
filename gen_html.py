@@ -5,20 +5,20 @@ import numpy as np
 PATH = '/home/runner/work/mvc/mvc/index.html'
 
 # ── 3-D graph helpers ──────────────────────────────────────────────────────
-_pid = [0]
+_graph_id_counter = [0]
 
 def _next_id():
-    _pid[0] += 1
-    return f'gplt{_pid[0]}'
+    _graph_id_counter[0] += 1
+    return f'gplt{_graph_id_counter[0]}'
 
 GOLD_CS  = [[0, '#e8d9b0'], [0.5, '#c8a84c'], [1, '#8b6914']]
 BLUE_CS  = [[0, '#b0cce8'], [0.5, '#4c8ac8'], [1, '#14568b']]
 GREEN_CS = [[0, '#b0e8c0'], [0.5, '#4cc870'], [1, '#1a8b3a']]
 
-def _surf(x2d, y2d, z2d, cs=None, opacity=0.85):
+def _surf(x2d, y2d, z2d, colorscale=None, opacity=0.85):
     return {'type': 'surface',
             'x': x2d, 'y': y2d, 'z': z2d,
-            'colorscale': cs or GOLD_CS,
+            'colorscale': colorscale or GOLD_CS,
             'showscale': False,
             'opacity': opacity,
             'contours': {'x': {'highlight': False},
@@ -45,30 +45,31 @@ def plot3d(title, traces, height=340):
             f'<script type="application/json" data-for="{pid}">{cfg}</script>'
             f'</div>')
 
-def sphere_traces(cx, cy, cz, r, cs=None, n=30):
+def sphere_traces(cx, cy, cz, r, colorscale=None, n=30):
     u = np.linspace(0, 2*np.pi, n)
     v = np.linspace(0, np.pi, n)
     U, V = np.meshgrid(u, v)
     x = (cx + r*np.cos(U)*np.sin(V)).tolist()
     y = (cy + r*np.sin(U)*np.sin(V)).tolist()
     z = (cz + r*np.cos(V)).tolist()
-    return [_surf(x, y, z, cs)]
+    return [_surf(x, y, z, colorscale)]
 
-def ellipsoid_traces(cx, cy, cz, a, b, c, cs=None, n=30):
+def ellipsoid_traces(cx, cy, cz, a, b, c, colorscale=None, n=30):
     u = np.linspace(0, 2*np.pi, n)
     v = np.linspace(0, np.pi, n)
     U, V = np.meshgrid(u, v)
     x = (cx + a*np.cos(U)*np.sin(V)).tolist()
     y = (cy + b*np.sin(U)*np.sin(V)).tolist()
     z = (cz + c*np.cos(V)).tolist()
-    return [_surf(x, y, z, cs)]
+    return [_surf(x, y, z, colorscale)]
 
-def paraboloid_traces(cx, cy, a2, b2, zdir=1, zoff=0, xlim=None, ylim=None, n=38):
-    ra, rb = np.sqrt(a2), np.sqrt(b2)
+def paraboloid_traces(cx, cy, a_sq, b_sq, zdir=1, zoff=0, xlim=None, ylim=None, n=38):
+    """Generate surface traces for an elliptic paraboloid z = zoff + zdir*(x²/a_sq + y²/b_sq)."""
+    ra, rb = np.sqrt(a_sq), np.sqrt(b_sq)
     xs = np.linspace(cx - 2*ra, cx + 2*ra, n) if xlim is None else np.linspace(*xlim, n)
     ys = np.linspace(cy - 2*rb, cy + 2*rb, n) if ylim is None else np.linspace(*ylim, n)
     X, Y = np.meshgrid(xs, ys)
-    Z = zoff + zdir*((X - cx)**2/a2 + (Y - cy)**2/b2)
+    Z = zoff + zdir*((X - cx)**2/a_sq + (Y - cy)**2/b_sq)
     return [_surf(xs.tolist(), ys.tolist(), Z.tolist())]
 
 def hyperboloid1_traces(a, b, c, t_range=2.5, n=38):
@@ -103,6 +104,16 @@ def zfunc_traces(f, xlim, ylim, n=38):
     ys = np.linspace(*ylim, n)
     X, Y = np.meshgrid(xs, ys)
     Z = f(X, Y)
+    return [_surf(xs.tolist(), ys.tolist(), Z.tolist())]
+
+def _upper_hemisphere_surface(n=38):
+    """Return surface traces for the upper unit hemisphere z = √(1−x²−y²)."""
+    xs = np.linspace(-1, 1, n)
+    ys = np.linspace(-1, 1, n)
+    X, Y = np.meshgrid(xs, ys)
+    Z = np.where(X**2 + Y**2 <= 1,
+                 np.sqrt(np.maximum(0, 1 - X**2 - Y**2)),
+                 np.nan)
     return [_surf(xs.tolist(), ys.tolist(), Z.tolist())]
 
 # ── helpers ────────────────────────────────────────────────────────────────
@@ -948,10 +959,7 @@ s13_1_cards = (
           r'This is the <strong>upper hemisphere</strong> of the unit sphere.'],
          r'Domain: unit disk \(x^2+y^2\le 1\); graph: upper hemisphere of unit sphere',
          plot3d('Upper hemisphere  z = √(1−x²−y²)',
-                zfunc_traces(lambda X, Y: np.where(X**2+Y**2 <= 1,
-                                                   np.sqrt(np.maximum(0, 1-X**2-Y**2)),
-                                                   np.nan),
-                             (-1, 1), (-1, 1))))
+                _upper_hemisphere_surface()))
 
   + card('Q19', r'Domain and graph of \(f(x,y)=-\sqrt{x^2+y^2}\)', ['domain','graph'],
          'Square root of a sum of squares — always defined. Negative sign gives lower nappe.',
