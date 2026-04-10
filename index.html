@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anton Calculus 10th Ed — Sections 10.4, 11.1–11.8, 13.1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script>
+MathJax = {
+  tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']], tags: 'none' },
+  svg: { fontCache: 'global' },
+  startup: { typeset: false }
+};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #14141e;
+  --card: #1c1c28;
+  --border: #2a2a3e;
+  --gold: #c9a84c;
+  --gold2: #e8c97a;
+  --text: #e2e2ef;
+  --muted: #8888aa;
+  --accent: #7c6fcd;
+  --green: #5fad8a;
+  --red: #e06c75;
+  --blue: #5b9bd5;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;line-height:1.65;min-height:100vh}
+a{color:var(--gold);text-decoration:none}
+code{font-family:'Space Mono',monospace;font-size:.85em;background:var(--card);padding:.1em .3em;border-radius:3px;color:var(--gold2)}
+
+/* HEADER */
+header{background:var(--surface);border-bottom:2px solid var(--gold);padding:1.5rem 2rem;display:flex;align-items:baseline;gap:1rem;flex-wrap:wrap}
+header h1{font-family:'DM Serif Display',serif;font-size:1.9rem;color:var(--gold);letter-spacing:-.01em}
+header span{color:var(--muted);font-size:.95rem}
+
+/* NAV */
+nav{background:var(--surface);border-bottom:1px solid var(--border);padding:.5rem 1rem;display:flex;flex-wrap:wrap;gap:.4rem;position:sticky;top:0;z-index:100}
+.nav-btn{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:.35rem .75rem;cursor:pointer;font-size:.82rem;font-family:'Space Mono',monospace;transition:all .2s}
+.nav-btn:hover{border-color:var(--gold);color:var(--gold2)}
+.nav-btn.active{background:var(--gold);border-color:var(--gold);color:#0a0a0f;font-weight:700}
+
+/* MAIN LAYOUT */
+main{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
+.section{display:none}
+.section.active{display:block}
+
+/* CONCEPTS BOX */
+.concepts-box{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--gold);border-radius:10px;margin-bottom:2rem;overflow:hidden}
+.concepts-toggle{width:100%;background:none;border:none;color:var(--gold2);font-family:'DM Serif Display',serif;font-size:1.15rem;padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;cursor:pointer;text-align:left}
+.concepts-toggle::after{content:'▾';font-size:1.2rem;transition:transform .25s}
+.concepts-toggle.collapsed::after{transform:rotate(-90deg)}
+.concepts-body{padding:1rem 1.5rem 1.25rem;display:grid;gap:.6rem}
+.concepts-body.hidden{display:none}
+.concept-item{display:flex;gap:.75rem;align-items:flex-start;padding:.5rem .75rem;background:var(--surface);border-radius:6px;border:1px solid var(--border)}
+.concept-label{color:var(--gold);font-weight:600;min-width:110px;font-size:.88rem;font-family:'Space Mono',monospace}
+.concept-desc{color:var(--text);font-size:.9rem;line-height:1.6}
+.concept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:.5rem}
+
+/* PROBLEM CARDS */
+.problems-header{font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--gold2);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+.problem-card{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:1.5rem;overflow:hidden}
+.problem-header{background:var(--surface);padding:.75rem 1.25rem;display:flex;align-items:center;gap:.75rem;border-bottom:1px solid var(--border)}
+.problem-num{background:var(--gold);color:#0a0a0f;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;font-family:'Space Mono',monospace;flex-shrink:0}
+.problem-q{color:var(--text);font-size:.95rem;line-height:1.5}
+.problem-tags{margin-left:auto;display:flex;gap:.3rem}
+.tag{background:var(--border);color:var(--muted);border-radius:4px;padding:.15rem .5rem;font-size:.75rem;font-family:'Space Mono',monospace}
+.tag.parabola{background:#1a2a1a;color:var(--green)}
+.tag.ellipse{background:#1a1a2a;color:var(--blue)}
+.tag.hyperbola{background:#2a1a1a;color:var(--red)}
+.tag.vector{background:#1e1a2e;color:var(--accent)}
+.tag.plane{background:#1a2020;color:#7ecece}
+.tag.surface{background:#2a1e10;color:#e8a04c}
+.tag.coord{background:#1a1e2a;color:#a0b4e8}
+
+/* SOLUTION */
+.solution{padding:1.25rem 1.5rem}
+.sol-overview{color:var(--muted);font-size:.9rem;margin-bottom:1rem;padding:.6rem 1rem;background:var(--surface);border-left:3px solid var(--accent);border-radius:0 6px 6px 0}
+.key-formula{color:var(--gold2);font-size:.95rem;margin-bottom:1rem;padding:.5rem 1rem;background:#1e1a08;border:1px solid #3a3010;border-radius:6px}
+.key-formula strong{color:var(--gold);margin-right:.5rem}
+.sol-steps{display:flex;flex-direction:column;gap:.75rem;margin-bottom:1rem}
+.step{display:flex;gap:.75rem;align-items:flex-start}
+.step-n{background:var(--accent);color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;margin-top:.1rem;font-family:'Space Mono',monospace}
+.step-body{color:var(--text);font-size:.93rem;line-height:1.65;flex:1}
+.step-body .sub{padding:.4rem .75rem;background:var(--surface);border-radius:5px;margin:.4rem 0;display:block}
+.sol-answer{background:linear-gradient(90deg,#1a1e0a,#141410);border:1px solid var(--gold);border-radius:8px;padding:.75rem 1.25rem;color:var(--gold2);font-size:.95rem}
+.sol-answer strong{color:var(--gold);margin-right:.5rem}
+
+/* PART LABELS */
+.part-label{font-family:'Space Mono',monospace;color:var(--gold);font-weight:700;margin:.75rem 0 .25rem;font-size:.88rem}
+.divider{border:none;border-top:1px solid var(--border);margin:.75rem 0}
+
+/* GRAPH */
+.graph-wrap{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin:1rem 0}
+.graph-title{padding:.5rem 1rem;background:var(--surface);color:var(--muted);font-size:.82rem;font-family:'Space Mono',monospace;border-bottom:1px solid var(--border)}
+.graph-div{height:380px;width:100%}
+.graph-div-sm{height:320px;width:100%}
+.graph-div-3d{height:440px;width:100%}
+.graphs-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1rem;margin:1rem 0}
+
+/* SECTION TITLE */
+.section-title{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--gold);margin-bottom:.4rem}
+.section-subtitle{color:var(--muted);font-size:1rem;margin-bottom:2rem}
+
+/* RESPONSIVE */
+@media(max-width:640px){
+  main{padding:1rem .75rem}
+  .section-title{font-size:1.5rem}
+  .concept-grid{grid-template-columns:1fr}
+  header h1{font-size:1.4rem}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Anton Calculus 10th Edition</h1>
+  <span>Sections 10.4 · 11.1 – 11.8 · 13.1</span>
+</header>
+<nav id="main-nav">
+  <button class="nav-btn active" data-target="s10_4">10.4 Conics</button>
+  <button class="nav-btn" data-target="s11_1">11.1 3D Coords</button>
+  <button class="nav-btn" data-target="s11_2">11.2 Vectors</button>
+  <button class="nav-btn" data-target="s11_3">11.3 Dot Product</button>
+  <button class="nav-btn" data-target="s11_4">11.4 Cross Product</button>
+  <button class="nav-btn" data-target="s11_5">11.5 Lines</button>
+  <button class="nav-btn" data-target="s11_6">11.6 Planes</button>
+  <button class="nav-btn" data-target="s11_7">11.7 Quadric Surfaces</button>
+  <button class="nav-btn" data-target="s11_8">11.8 Cyl &amp; Sph Coords</button>
+  <button class="nav-btn" data-target="s13_1">13.1 Multivariable Fns</button>
+</nav>
+<main>
+
+<div id="s10_4" class="section active">
+<h2 class="section-title">10.4 — Conic Sections</h2>
+<p class="section-subtitle">Parabolas, Ellipses, and Hyperbolas in standard and translated forms</p>
+
+<div class="concepts-box">
+  <button class="concepts-toggle" onclick="toggleConcepts(this)">Key Concepts &amp; Formulas — Section 10.4</button>
+  <div class="concepts-body">
+    <div class="concept-grid">
+      <div class="concept-item"><span class="concept-label">Parabola (H)</span><span class="concept-desc">\(y^2=4px\): vertex \((0,0)\), focus \((p,0)\), directrix \(x=-p\); opens right if \(p>0\)</span></div>
+      <div class="concept-item"><span class="concept-label">Parabola (V)</span><span class="concept-desc">\(x^2=4py\): vertex \((0,0)\), focus \((0,p)\), directrix \(y=-p\); opens up if \(p>0\)</span></div>
+      <div class="concept-item"><span class="concept-label">Shifted Para.</span><span class="concept-desc">\((y-k)^2=4p(x-h)\) or \((x-h)^2=4p(y-k)\); vertex at \((h,k)\)</span></div>
+      <div class="concept-item"><span class="concept-label">Ellipse</span><span class="concept-desc">\(\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=1\), \(a>b>0\); \(c^2=a^2-b^2\); foci \((\pm c,0)\); eccentricity \(e=c/a<1\)</span></div>
+      <div class="concept-item"><span class="concept-label">Hyperbola (H)</span><span class="concept-desc">\(\dfrac{x^2}{a^2}-\dfrac{y^2}{b^2}=1\); \(c^2=a^2+b^2\); asymptotes \(y=\pm\dfrac{b}{a}x\)</span></div>
+      <div class="concept-item"><span class="concept-label">Hyperbola (V)</span><span class="concept-desc">\(\dfrac{y^2}{a^2}-\dfrac{x^2}{b^2}=1\); asymptotes \(y=\pm\dfrac{a}{b}x\)</span></div>
+    </div>
+  </div>
+</div>
+
+<h3 class="problems-header">Problems</h3>
+
+<!-- Problem 3 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">3</span>
+    <span class="problem-q">Find the vertex, focus, and directrix of each parabola and sketch the curve.</span>
+    <span class="problem-tags"><span class="tag parabola">parabola</span></span>
+  </div>
+  <div class="solution">
+    <div class="part-label">(a) \(y^2 = 4x\)</div>
+    <div class="sol-overview">Compare with \(y^2=4px\) to identify \(p\).</div>
+    <div class="key-formula"><strong>Formula:</strong> \(y^2=4px\) — horizontal parabola, vertex at origin</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Match \(y^2=4x\) with \(y^2=4px\): \(4p=4 \implies p=1\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Since \(p=1>0\), the parabola opens <em>right</em>.</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">Vertex: \((0,0)\); Focus: \((p,0)=(1,0)\); Directrix: \(x=-p=-1\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> Vertex \((0,0)\), Focus \((1,0)\), Directrix \(x=-1\), opens right.</div>
+
+    <hr class="divider">
+    <div class="part-label">(b) \(x^2 = -8y\)</div>
+    <div class="sol-overview">Compare with \(x^2=4py\) to identify \(p\).</div>
+    <div class="key-formula"><strong>Formula:</strong> \(x^2=4py\) — vertical parabola, vertex at origin</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Match \(x^2=-8y\) with \(x^2=4py\): \(4p=-8 \implies p=-2\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Since \(p=-2<0\), the parabola opens <em>down</em>.</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">Vertex: \((0,0)\); Focus: \((0,p)=(0,-2)\); Directrix: \(y=-p=2\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> Vertex \((0,0)\), Focus \((0,-2)\), Directrix \(y=2\), opens down.</div>
+
+    <div class="graph-wrap">
+      <div class="graph-title">Graph — Problem 3: Parabolas \(y^2=4x\) and \(x^2=-8y\)</div>
+      <div class="graph-div" id="g-p3-parabola"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Problem 4 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">4</span>
+    <span class="problem-q">Find the vertex, focus, and directrix of each parabola.</span>
+    <span class="problem-tags"><span class="tag parabola">parabola</span></span>
+  </div>
+  <div class="solution">
+    <div class="part-label">(a) \(y^2 = -10x\)</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(4p=-10 \implies p=-\tfrac{5}{2}\). Opens <em>left</em>.</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Vertex: \((0,0)\); Focus: \(\bigl(-\tfrac{5}{2},0\bigr)\); Directrix: \(x=\tfrac{5}{2}\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> Focus \(\bigl(-\tfrac{5}{2},0\bigr)\), Directrix \(x=\tfrac{5}{2}\).</div>
+
+    <hr class="divider">
+    <div class="part-label">(b) \(x^2 = 4y\)</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(4p=4 \implies p=1\). Opens <em>up</em>.</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Vertex: \((0,0)\); Focus: \((0,1)\); Directrix: \(y=-1\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> Focus \((0,1)\), Directrix \(y=-1\).</div>
+  </div>
+</div>
+
+<!-- Problem 5 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">5</span>
+    <span class="problem-q">Find the vertex, focus, and directrix of the shifted parabola.</span>
+    <span class="problem-tags"><span class="tag parabola">parabola</span></span>
+  </div>
+  <div class="solution">
+    <div class="part-label">(a) \((y-1)^2 = -12(x+4)\)</div>
+    <div class="key-formula"><strong>Formula:</strong> \((y-k)^2=4p(x-h)\), vertex \((h,k)\), focus \((h+p,k)\)</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Vertex: \((-4,1)\). Here \(4p=-12 \implies p=-3\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Focus: \((h+p,k)=(-4+(-3),1)=(-7,1)\).</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">Directrix: \(x=h-p=-4-(-3)=-1\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> Vertex \((-4,1)\), Focus \((-7,1)\), Directrix \(x=-1\).</div>
+
+    <hr class="divider">
+    <div class="part-label">(b) \((x-1)^2 = 2\!\left(y-\tfrac{1}{2}\right)\)</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Vertex: \(\bigl(1,\tfrac{1}{2}\bigr)\). Here \(4p=2 \implies p=\tfrac{1}{2}\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Focus: \(\bigl(1,\tfrac{1}{2}+\tfrac{1}{2}\bigr)=(1,1)\).</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">Directrix: \(y=\tfrac{1}{2}-\tfrac{1}{2}=0\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> Vertex \((1,\tfrac{1}{2})\), Focus \((1,1)\), Directrix \(y=0\).</div>
+  </div>
+</div>
+
+<!-- Problem 7 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">7</span>
+    <span class="problem-q">Find the foci, vertices, and semi-axes of each ellipse.</span>
+    <span class="problem-tags"><span class="tag ellipse">ellipse</span></span>
+  </div>
+  <div class="solution">
+    <div class="part-label">(a) \(\dfrac{x^2}{16}+\dfrac{y^2}{9}=1\)</div>
+    <div class="key-formula"><strong>Formula:</strong> \(c^2=a^2-b^2\), foci at \((\pm c,0)\) when \(a^2>b^2\) (major axis along \(x\))</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(a^2=16, b^2=9 \implies a=4, b=3\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">\(c^2=16-9=7 \implies c=\sqrt{7}\).</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">Vertices (major): \((\pm 4,0)\); Co-vertices: \((0,\pm 3)\); Foci: \((\pm\sqrt{7},0)\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(a=4, b=3, c=\sqrt{7}\); Vertices \((\pm 4,0)\), Foci \((\pm\sqrt{7},0)\).</div>
+
+    <hr class="divider">
+    <div class="part-label">(b) \(9x^2+y^2=9\)</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Divide by 9: \(x^2+\dfrac{y^2}{9}=1\). So \(a^2=9 (y\text{-axis}), b^2=1\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">\(a=3, b=1, c^2=9-1=8 \implies c=2\sqrt{2}\).</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">Vertices: \((0,\pm 3)\); Co-vertices: \((\pm 1,0)\); Foci: \((0,\pm 2\sqrt{2})\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(a=3, b=1, c=2\sqrt{2}\); Vertices \((0,\pm 3)\), Foci \((0,\pm 2\sqrt{2})\).</div>
+
+    <div class="graph-wrap">
+      <div class="graph-title">Graph — Problem 7: Two Ellipses</div>
+      <div class="graph-div" id="g-p7-ellipse"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Problem 8 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">8</span>
+    <span class="problem-q">Find the foci and vertices of each ellipse.</span>
+    <span class="problem-tags"><span class="tag ellipse">ellipse</span></span>
+  </div>
+  <div class="solution">
+    <div class="part-label">(a) \(\dfrac{x^2}{25}+\dfrac{y^2}{4}=1\)</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(a=5, b=2, c^2=25-4=21 \implies c=\sqrt{21}\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Vertices: \((\pm 5,0)\); Foci: \((\pm\sqrt{21},0)\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> Vertices \((\pm 5,0)\), Foci \((\pm\sqrt{21},0)\).</div>
+    <hr class="divider">
+    <div class="part-label">(b) \(4x^2+y^2=36\)</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Divide by 36: \(\dfrac{x^2}{9}+\dfrac{y^2}{36}=1\). Major axis along \(y\): \(a=6, b=3\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">\(c^2=36-9=27 \implies c=3\sqrt{3}\).</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">Vertices: \((0,\pm 6)\); Foci: \((0,\pm 3\sqrt{3})\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> Vertices \((0,\pm 6)\), Foci \((0,\pm 3\sqrt{3})\).</div>
+  </div>
+</div>
+
+<!-- Problem 9 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">9</span>
+    <span class="problem-q">Find the center, foci, and vertices of the shifted ellipse.</span>
+    <span class="problem-tags"><span class="tag ellipse">ellipse</span></span>
+  </div>
+  <div class="solution">
+    <div class="part-label">(a) \((x+3)^2+4(y-5)^2=16\)</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Divide by 16: \(\dfrac{(x+3)^2}{16}+\dfrac{(y-5)^2}{4}=1\). Center \((-3,5)\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">\(a^2=16 (x\text{-direction}), b^2=4, c^2=12 \implies c=2\sqrt{3}\).</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">Vertices: \((-3\pm 4,5)=(-7,5)\) and \((1,5)\). Foci: \((-3\pm 2\sqrt{3},5)\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> Center \((-3,5)\); Vertices \((-7,5),(1,5)\); Foci \((-3\pm 2\sqrt{3},5)\).</div>
+    <hr class="divider">
+    <div class="part-label">(b) \(\dfrac{x^2}{4}+\dfrac{(y+2)^2}{9}=1\)</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Center \((0,-2)\); \(a^2=9 (y\text{-dir}), b^2=4, c^2=5 \implies c=\sqrt{5}\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Vertices: \((0,-2\pm 3)\). Foci: \((0,-2\pm\sqrt{5})\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> Center \((0,-2)\); Vertices \((0,1),(0,-5)\); Foci \((0,-2\pm\sqrt{5})\).</div>
+  </div>
+</div>
+
+<!-- Problem 11 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">11</span>
+    <span class="problem-q">Find the vertices, foci, and asymptotes of each hyperbola.</span>
+    <span class="problem-tags"><span class="tag hyperbola">hyperbola</span></span>
+  </div>
+  <div class="solution">
+    <div class="part-label">(a) \(\dfrac{x^2}{16}-\dfrac{y^2}{9}=1\)</div>
+    <div class="key-formula"><strong>Formula:</strong> \(\frac{x^2}{a^2}-\frac{y^2}{b^2}=1\); \(c^2=a^2+b^2\); asymptotes \(y=\pm\frac{b}{a}x\)</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(a=4, b=3, c^2=16+9=25 \implies c=5\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Vertices: \((\pm 4,0)\); Foci: \((\pm 5,0)\).</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">Asymptotes: \(y=\pm\dfrac{3}{4}x\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> Vertices \((\pm 4,0)\), Foci \((\pm 5,0)\), Asymptotes \(y=\pm\tfrac{3}{4}x\).</div>
+    <hr class="divider">
+    <div class="part-label">(b) \(9y^2-x^2=36\)</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Divide by 36: \(\dfrac{y^2}{4}-\dfrac{x^2}{36}=1\). \(a=2, b=6, c^2=4+36=40 \implies c=2\sqrt{10}\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Vertices: \((0,\pm 2)\); Foci: \((0,\pm 2\sqrt{10})\).</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">Asymptotes: \(y=\pm\dfrac{a}{b}x=\pm\dfrac{2}{6}x=\pm\dfrac{1}{3}x\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> Vertices \((0,\pm 2)\), Foci \((0,\pm 2\sqrt{10})\), Asymptotes \(y=\pm\tfrac{1}{3}x\).</div>
+    <div class="graph-wrap">
+      <div class="graph-title">Graph — Problem 11(a): Hyperbola \(\frac{x^2}{16}-\frac{y^2}{9}=1\) with asymptotes</div>
+      <div class="graph-div" id="g-p11-hyperbola"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Problem 12 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">12</span>
+    <span class="problem-q">Find the vertices, foci, and asymptotes of each hyperbola.</span>
+    <span class="problem-tags"><span class="tag hyperbola">hyperbola</span></span>
+  </div>
+  <div class="solution">
+    <div class="part-label">(a) \(\dfrac{y^2}{9}-\dfrac{x^2}{25}=1\)</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(a=3 (y\text{-axis}), b=5, c^2=9+25=34 \implies c=\sqrt{34}\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Vertices: \((0,\pm 3)\); Asymptotes: \(y=\pm\dfrac{3}{5}x\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> Vertices \((0,\pm 3)\), Foci \((0,\pm\sqrt{34})\), Asymptotes \(y=\pm\tfrac{3}{5}x\).</div>
+    <hr class="divider">
+    <div class="part-label">(b) \(16x^2-25y^2=400\)</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Divide by 400: \(\dfrac{x^2}{25}-\dfrac{y^2}{16}=1\). \(a=5, b=4, c^2=25+16=41 \implies c=\sqrt{41}\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Vertices: \((\pm 5,0)\); Foci: \((\pm\sqrt{41},0)\); Asymptotes: \(y=\pm\dfrac{4}{5}x\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> Vertices \((\pm 5,0)\), Foci \((\pm\sqrt{41},0)\), Asymptotes \(y=\pm\tfrac{4}{5}x\).</div>
+  </div>
+</div>
+
+<!-- Problem 13 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">13</span>
+    <span class="problem-q">Find the center, vertices, foci, and asymptotes of the shifted hyperbola.</span>
+    <span class="problem-tags"><span class="tag hyperbola">hyperbola</span></span>
+  </div>
+  <div class="solution">
+    <div class="part-label">(a) \(\dfrac{(y+4)^2}{3}-\dfrac{(x-2)^2}{5}=1\)</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Center \((2,-4)\). \(a^2=3 (y\text{-dir}), b^2=5, c^2=3+5=8 \implies c=2\sqrt{2}\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Vertices: \((2,-4\pm\sqrt{3})\). Asymptotes: \(y+4=\pm\sqrt{\tfrac{3}{5}}(x-2)\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> Center \((2,-4)\), \(c=2\sqrt{2}\), Vertices \((2,-4\pm\sqrt{3})\).</div>
+    <hr class="divider">
+    <div class="part-label">(b) \((x+1)^2-\dfrac{(y-3)^2}{2}=1\)</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Center \((-1,3)\). \(a^2=1 (x\text{-dir}), b^2=2, c^2=3 \implies c=\sqrt{3}\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Vertices: \((-1\pm 1,3)\). Asymptotes: \(y-3=\pm\sqrt{2}(x+1)\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> Center \((-1,3)\), \(c=\sqrt{3}\), Vertices \((-2,3),(0,3)\).</div>
+  </div>
+</div>
+
+<!-- Problem 15 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">15</span>
+    <span class="problem-q">(a) Find the equation of a parabola with vertex \((3,-1)\), axis parallel to the \(y\)-axis, passing through \((5,3)\).</span>
+    <span class="problem-tags"><span class="tag parabola">parabola</span></span>
+  </div>
+  <div class="solution">
+    <div class="sol-overview">Use \((x-h)^2=4p(y-k)\) and substitute the given point to find \(4p\).</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Form: \((x-3)^2=4p(y+1)\). Substitute \((5,3)\): \((5-3)^2=4p(3+1) \implies 4=16p \implies p=\tfrac{1}{4}\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Equation: \((x-3)^2=y+1\), i.e., \((x-3)^2=1\cdot(y+1)\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \((x-3)^2=y+1\)</div>
+  </div>
+</div>
+
+<!-- Problem 16 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">16</span>
+    <span class="problem-q">Find equations of the described parabolas.</span>
+    <span class="problem-tags"><span class="tag parabola">parabola</span></span>
+  </div>
+  <div class="solution">
+    <div class="part-label">(a) Latus rectum endpoints \((-2,2)\) and \((6,2)\), opens downward.</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Latus rectum is horizontal; midpoint gives \(x\)-coord of vertex: \(x=\tfrac{-2+6}{2}=2\). The latus rectum is at height \(y=2\), which equals \(y=k+p\). Since latus rectum half-length \(=|2p|=\tfrac{6-(-2)}{2}=4 \implies |p|=2\). Opens down \(\implies p=-2\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Focus \(=(2,2)\) means \(k+p=2 \implies k=2-(-2)=4\). Vertex: \((2,4)\).</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">Equation: \((x-2)^2=4(-2)(y-4)=-8(y-4)\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \((x-2)^2=-8(y-4)\)</div>
+    <hr class="divider">
+    <div class="part-label">(b) Vertex at origin, passes through \((2,4)\), axis along \(x\)-axis.</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Form \(y^2=4px\). Sub \((2,4)\): \(16=8p \implies p=2\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(y^2=8x\)</div>
+  </div>
+</div>
+
+<!-- Problem 17 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">17</span>
+    <span class="problem-q">Axis parallel to \(x\)-axis, vertex \((2,3)\), passes through \((0,4)\).</span>
+    <span class="problem-tags"><span class="tag parabola">parabola</span></span>
+  </div>
+  <div class="solution">
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Form: \((y-3)^2=4p(x-2)\). Sub \((0,4)\): \((4-3)^2=4p(0-2) \implies 1=-8p \implies p=-\tfrac{1}{8}\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Equation: \((y-3)^2=4(-\tfrac{1}{8})(x-2)=-\tfrac{1}{2}(x-2)\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \((y-3)^2=-\tfrac{1}{2}(x-2)\)</div>
+  </div>
+</div>
+
+<!-- Problem 23 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">23</span>
+    <span class="problem-q">Find equations of described hyperbolas.</span>
+    <span class="problem-tags"><span class="tag hyperbola">hyperbola</span></span>
+  </div>
+  <div class="solution">
+    <div class="part-label">(a) Vertices \((\pm 2,0)\), Foci \((\pm 3,0)\).</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(a=2, c=3 \implies b^2=c^2-a^2=9-4=5\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(\dfrac{x^2}{4}-\dfrac{y^2}{5}=1\)</div>
+    <hr class="divider">
+    <div class="part-label">(b) \(y\)-axis, vertices \((0,\pm 2)\), asymptotes \(y=\pm\tfrac{2}{3}x\).</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(a=2\), asymptote slope \(=\tfrac{a}{b}=\tfrac{2}{3} \implies b=3\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(\dfrac{y^2}{4}-\dfrac{x^2}{9}=1\)</div>
+  </div>
+</div>
+
+<!-- Problem 24 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">24</span>
+    <span class="problem-q">Find equations of described hyperbolas.</span>
+    <span class="problem-tags"><span class="tag hyperbola">hyperbola</span></span>
+  </div>
+  <div class="solution">
+    <div class="part-label">(a) Asymptotes \(y=\pm\tfrac{2}{3}x\), \(b=4\).</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">For \(\frac{x^2}{a^2}-\frac{y^2}{b^2}=1\): slope \(=\tfrac{b}{a}=\tfrac{2}{3}\). With \(b=4\): \(a=6\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(\dfrac{x^2}{36}-\dfrac{y^2}{16}=1\)</div>
+    <hr class="divider">
+    <div class="part-label">(b) Foci \((0,\pm 5)\), asymptotes \(y=\pm 2x\).</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(c=5\); vertical hyperbola: slope \(=\tfrac{a}{b}=2 \implies a=2b\). Then \(c^2=a^2+b^2=4b^2+b^2=5b^2=25 \implies b^2=5, a^2=20\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(\dfrac{y^2}{20}-\dfrac{x^2}{5}=1\)</div>
+  </div>
+</div>
+
+<!-- Problem 25 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">25</span>
+    <span class="problem-q">Find equations of described hyperbolas.</span>
+    <span class="problem-tags"><span class="tag hyperbola">hyperbola</span></span>
+  </div>
+  <div class="solution">
+    <div class="part-label">(a) Asymptotes \(y=\pm\tfrac{4}{3}x\), \(c=5\).</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(\tfrac{b}{a}=\tfrac{4}{3} \implies b=\tfrac{4a}{3}\). Then \(c^2=a^2+b^2=a^2+\tfrac{16a^2}{9}=\tfrac{25a^2}{9}=25 \implies a^2=9, b^2=16\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(\dfrac{x^2}{9}-\dfrac{y^2}{16}=1\)</div>
+    <hr class="divider">
+    <div class="part-label">(b) Foci \((\pm 3,0)\), asymptotes \(y=\pm 2x\).</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(c=3\); slope \(=\tfrac{b}{a}=2 \implies b=2a\). Then \(c^2=a^2+4a^2=5a^2=9 \implies a^2=\tfrac{9}{5}, b^2=\tfrac{36}{5}\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(\dfrac{x^2}{9/5}-\dfrac{y^2}{36/5}=1\), or equivalently \(\dfrac{5x^2}{9}-\dfrac{5y^2}{36}=1\)</div>
+  </div>
+</div>
+
+</div><!-- end s10_4 -->
+
+<div id="s11_1" class="section">
+<h2 class="section-title">11.1 — Rectangular Coordinates in 3-Space; Spheres</h2>
+<p class="section-subtitle">Distance formula, midpoints, and equations of spheres in \(\mathbb{R}^3\)</p>
+
+<div class="concepts-box">
+  <button class="concepts-toggle" onclick="toggleConcepts(this)">Key Concepts &amp; Formulas — Section 11.1</button>
+  <div class="concepts-body">
+    <div class="concept-grid">
+      <div class="concept-item"><span class="concept-label">Distance</span><span class="concept-desc">\(d=\sqrt{(x_2-x_1)^2+(y_2-y_1)^2+(z_2-z_1)^2}\)</span></div>
+      <div class="concept-item"><span class="concept-label">Midpoint</span><span class="concept-desc">\(M=\left(\frac{x_1+x_2}{2},\frac{y_1+y_2}{2},\frac{z_1+z_2}{2}\right)\)</span></div>
+      <div class="concept-item"><span class="concept-label">Sphere</span><span class="concept-desc">\((x-h)^2+(y-k)^2+(z-\ell)^2=r^2\); center \((h,k,\ell)\), radius \(r\)</span></div>
+      <div class="concept-item"><span class="concept-label">Complete Square</span><span class="concept-desc">\(x^2+bx = \left(x+\frac{b}{2}\right)^2-\frac{b^2}{4}\)</span></div>
+    </div>
+  </div>
+</div>
+
+<h3 class="problems-header">Problems</h3>
+
+<!-- 11.1 Problem 9 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">9</span>
+    <span class="problem-q">Find the distance between the points \(A(2,3,-1)\) and \(B(4,1,3)\), and find the midpoint of segment \(AB\).</span>
+  </div>
+  <div class="solution">
+    <div class="key-formula"><strong>Formula:</strong> \(d=\sqrt{\Delta x^2+\Delta y^2+\Delta z^2}\)</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(d=\sqrt{(4-2)^2+(1-3)^2+(3-(-1))^2}=\sqrt{4+4+16}=\sqrt{24}=2\sqrt{6}\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Midpoint: \(M=\left(\frac{2+4}{2},\frac{3+1}{2},\frac{-1+3}{2}\right)=(3,2,1)\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> Distance \(=2\sqrt{6}\approx 4.90\); Midpoint \(M=(3,2,1)\).</div>
+  </div>
+</div>
+
+<!-- 11.1 Problem 11 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">11</span>
+    <span class="problem-q">Find the equation of the sphere with center \((-1,2,0)\) and radius \(3\). Then find the center and radius of \(x^2+y^2+z^2-2x+4y-2z-3=0\).</span>
+  </div>
+  <div class="solution">
+    <div class="part-label">(a) Equation of sphere</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\((x+1)^2+(y-2)^2+z^2=9\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \((x+1)^2+(y-2)^2+z^2=9\)</div>
+    <hr class="divider">
+    <div class="part-label">(b) Find center and radius of \(x^2+y^2+z^2-2x+4y-2z-3=0\)</div>
+    <div class="key-formula"><strong>Method:</strong> Complete the square in each variable</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Group: \((x^2-2x)+(y^2+4y)+(z^2-2z)=3\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Complete: \((x-1)^2-1+(y+2)^2-4+(z-1)^2-1=3\).</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">\((x-1)^2+(y+2)^2+(z-1)^2=9\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> Center \((1,-2,1)\), Radius \(r=3\).</div>
+  </div>
+</div>
+
+<!-- 11.1 Problem 13 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">13</span>
+    <span class="problem-q">Find the center and radius: \(x^2+y^2+z^2+4x-8z+4=0\).</span>
+  </div>
+  <div class="solution">
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Group: \((x^2+4x)+y^2+(z^2-8z)=-4\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">\((x+2)^2-4+y^2+(z-4)^2-16=-4 \implies (x+2)^2+y^2+(z-4)^2=16\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> Center \((-2,0,4)\), Radius \(r=4\).</div>
+  </div>
+</div>
+
+<!-- 11.1 Problem 14 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">14</span>
+    <span class="problem-q">Find the center and radius: \(2x^2+2y^2+2z^2-4x+8y-16z-1=0\).</span>
+  </div>
+  <div class="solution">
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Divide by 2: \(x^2+y^2+z^2-2x+4y-8z-\tfrac{1}{2}=0\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Group: \((x^2-2x)+(y^2+4y)+(z^2-8z)=\tfrac{1}{2}\).</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">\((x-1)^2-1+(y+2)^2-4+(z-4)^2-16=\tfrac{1}{2}\).</div></div>
+      <div class="step"><span class="step-n">4</span><div class="step-body">\((x-1)^2+(y+2)^2+(z-4)^2=\tfrac{1}{2}+21=\tfrac{43}{2}\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> Center \((1,-2,4)\), Radius \(r=\sqrt{43/2}=\frac{\sqrt{86}}{2}\).</div>
+  </div>
+</div>
+
+<!-- 11.1 Problem 15 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">15</span>
+    <span class="problem-q">Show that \(x^2+y^2+z^2-6x-4y+2z+14=0\) is a sphere and find center and radius.</span>
+  </div>
+  <div class="solution">
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Group: \((x^2-6x)+(y^2-4y)+(z^2+2z)=-14\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">\((x-3)^2-9+(y-2)^2-4+(z+1)^2-1=-14\).</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">\((x-3)^2+(y-2)^2+(z+1)^2=0\). This is a point (degenerate sphere) at \((3,2,-1)\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> Point sphere at \((3,2,-1)\), \(r=0\).</div>
+  </div>
+</div>
+
+<!-- 11.1 Problem 18 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">18</span>
+    <span class="problem-q">Find the sphere with diameter endpoints \(A(1,0,-1)\) and \(B(3,4,3)\).</span>
+  </div>
+  <div class="solution">
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Center = midpoint: \(C=\left(\frac{1+3}{2},\frac{0+4}{2},\frac{-1+3}{2}\right)=(2,2,1)\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Radius = half-diameter: \(r=\frac{1}{2}\sqrt{(3-1)^2+(4-0)^2+(3+1)^2}=\frac{1}{2}\sqrt{4+16+16}=\frac{6}{2}=3\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \((x-2)^2+(y-2)^2+(z-1)^2=9\)</div>
+  </div>
+</div>
+
+<!-- 11.1 Problem 27 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">27</span>
+    <span class="problem-q">Describe the set of all points equidistant from \(A(3,1,-2)\) and \(B(-1,3,4)\).</span>
+  </div>
+  <div class="solution">
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Set \(d(P,A)=d(P,B)\): \(\sqrt{(x-3)^2+(y-1)^2+(z+2)^2}=\sqrt{(x+1)^2+(y-3)^2+(z-4)^2}\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Square both sides and expand: \(x^2-6x+9+y^2-2y+1+z^2+4z+4=x^2+2x+1+y^2-6y+9+z^2-8z+16\).</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">Simplify: \(-6x-2y+4z+14=2x-6y-8z+26\).</div></div>
+      <div class="step"><span class="step-n">4</span><div class="step-body">Collect: \(-8x+4y+12z=12 \implies -2x+y+3z=3\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> The plane \(-2x+y+3z=3\) (perpendicular bisector plane of segment \(AB\)).</div>
+  </div>
+</div>
+
+<!-- 11.1 Problem 33 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">33</span>
+    <span class="problem-q">Find the equation of the sphere that passes through the origin and has center \((1,2,-3)\).</span>
+  </div>
+  <div class="solution">
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(r=d(\text{center},\text{origin})=\sqrt{1^2+2^2+(-3)^2}=\sqrt{14}\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Equation: \((x-1)^2+(y-2)^2+(z+3)^2=14\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \((x-1)^2+(y-2)^2+(z+3)^2=14\)</div>
+  </div>
+</div>
+
+<!-- 11.1 Problem 47 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">47</span>
+    <span class="problem-q">Write the inequalities describing the set of points inside the unit sphere centred at the origin and above the \(xy\)-plane.</span>
+  </div>
+  <div class="solution">
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Inside the unit sphere: \(x^2+y^2+z^2 < 1\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Above the \(xy\)-plane: \(z>0\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(x^2+y^2+z^2 &lt; 1\) and \(z&gt;0\).</div>
+  </div>
+</div>
+
+</div><!-- end s11_1 -->
+
+<div id="s11_2" class="section">
+<h2 class="section-title">11.2 — Vectors</h2>
+<p class="section-subtitle">Component form, magnitude, unit vectors, and vector arithmetic</p>
+
+<div class="concepts-box">
+  <button class="concepts-toggle" onclick="toggleConcepts(this)">Key Concepts &amp; Formulas — Section 11.2</button>
+  <div class="concepts-body">
+    <div class="concept-grid">
+      <div class="concept-item"><span class="concept-label">Component Form</span><span class="concept-desc">\(\mathbf{v}=\langle v_1,v_2,v_3\rangle\); from \(A(x_1,y_1,z_1)\) to \(B(x_2,y_2,z_2)\): \(\mathbf{v}=\langle x_2-x_1,y_2-y_1,z_2-z_1\rangle\)</span></div>
+      <div class="concept-item"><span class="concept-label">Magnitude</span><span class="concept-desc">\(\|\mathbf{v}\|=\sqrt{v_1^2+v_2^2+v_3^2}\)</span></div>
+      <div class="concept-item"><span class="concept-label">Unit Vector</span><span class="concept-desc">\(\hat{\mathbf{v}}=\dfrac{\mathbf{v}}{\|\mathbf{v}\|}\)</span></div>
+      <div class="concept-item"><span class="concept-label">Arithmetic</span><span class="concept-desc">\(\mathbf{u}+\mathbf{v}=\langle u_1+v_1,u_2+v_2,u_3+v_3\rangle\); \(k\mathbf{v}=\langle kv_1,kv_2,kv_3\rangle\)</span></div>
+      <div class="concept-item"><span class="concept-label">From Angle</span><span class="concept-desc">\(\mathbf{v}=\|\mathbf{v}\|\langle\cos\theta,\sin\theta\rangle\) for 2D vectors at angle \(\theta\)</span></div>
+      <div class="concept-item"><span class="concept-label">Standard Basis</span><span class="concept-desc">\(\mathbf{i}=\langle1,0,0\rangle,\;\mathbf{j}=\langle0,1,0\rangle,\;\mathbf{k}=\langle0,0,1\rangle\)</span></div>
+    </div>
+  </div>
+</div>
+
+<h3 class="problems-header">Problems</h3>
+
+<!-- 11.2 Problem 7 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">7</span>
+    <span class="problem-q">Let \(\mathbf{u}=\langle 2,-1,3\rangle\) and \(\mathbf{v}=\langle1,0,-2\rangle\). Find \(2\mathbf{u}-3\mathbf{v}\) and \(\|\mathbf{u}-\mathbf{v}\|\).</span>
+    <span class="problem-tags"><span class="tag vector">vector</span></span>
+  </div>
+  <div class="solution">
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(2\mathbf{u}=\langle4,-2,6\rangle\), \(3\mathbf{v}=\langle3,0,-6\rangle\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">\(2\mathbf{u}-3\mathbf{v}=\langle4-3,-2-0,6-(-6)\rangle=\langle1,-2,12\rangle\).</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">\(\mathbf{u}-\mathbf{v}=\langle2-1,-1-0,3-(-2)\rangle=\langle1,-1,5\rangle\).</div></div>
+      <div class="step"><span class="step-n">4</span><div class="step-body">\(\|\mathbf{u}-\mathbf{v}\|=\sqrt{1+1+25}=\sqrt{27}=3\sqrt{3}\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(2\mathbf{u}-3\mathbf{v}=\langle1,-2,12\rangle\); \(\|\mathbf{u}-\mathbf{v}\|=3\sqrt{3}\).</div>
+  </div>
+</div>
+
+<!-- 11.2 Problem 9 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">9</span>
+    <span class="problem-q">Find the unit vector in the direction of \(\mathbf{v}=\langle3,-4,0\rangle\), and verify it has length 1.</span>
+    <span class="problem-tags"><span class="tag vector">vector</span></span>
+  </div>
+  <div class="solution">
+    <div class="key-formula"><strong>Formula:</strong> \(\hat{\mathbf{v}}=\mathbf{v}/\|\mathbf{v}\|\)</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(\|\mathbf{v}\|=\sqrt{9+16+0}=\sqrt{25}=5\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">\(\hat{\mathbf{v}}=\dfrac{1}{5}\langle3,-4,0\rangle=\left\langle\tfrac{3}{5},-\tfrac{4}{5},0\right\rangle\).</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">Check: \(\|\hat{\mathbf{v}}\|=\sqrt{\tfrac{9}{25}+\tfrac{16}{25}}=\sqrt{1}=1\). ✓</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(\hat{\mathbf{v}}=\langle\tfrac{3}{5},-\tfrac{4}{5},0\rangle\).</div>
+  </div>
+</div>
+
+<!-- 11.2 Problem 15 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">15</span>
+    <span class="problem-q">Find the vector \(\overrightarrow{AB}\) where \(A=(3,2,1)\) and \(B=(1,4,-2)\), and find its magnitude.</span>
+    <span class="problem-tags"><span class="tag vector">vector</span></span>
+  </div>
+  <div class="solution">
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(\overrightarrow{AB}=\langle1-3,4-2,-2-1\rangle=\langle-2,2,-3\rangle\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">\(\|\overrightarrow{AB}\|=\sqrt{4+4+9}=\sqrt{17}\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(\overrightarrow{AB}=\langle-2,2,-3\rangle\), \(\|\overrightarrow{AB}\|=\sqrt{17}\).</div>
+  </div>
+</div>
+
+<!-- 11.2 Problem 23 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">23</span>
+    <span class="problem-q">Find a unit vector in the direction opposite to \(\mathbf{v}=\langle-1,2,-4\rangle\).</span>
+    <span class="problem-tags"><span class="tag vector">vector</span></span>
+  </div>
+  <div class="solution">
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(\|\mathbf{v}\|=\sqrt{1+4+16}=\sqrt{21}\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Unit vector opposite: \(-\hat{\mathbf{v}}=\dfrac{-\mathbf{v}}{\|\mathbf{v}\|}=\left\langle\dfrac{1}{\sqrt{21}},-\dfrac{2}{\sqrt{21}},\dfrac{4}{\sqrt{21}}\right\rangle\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(\left\langle\dfrac{1}{\sqrt{21}},-\dfrac{2}{\sqrt{21}},\dfrac{4}{\sqrt{21}}\right\rangle\).</div>
+  </div>
+</div>
+
+<!-- 11.2 Problem 24 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">24</span>
+    <span class="problem-q">Find a vector of length 5 in the direction of \(\mathbf{u}=\langle3,-4\rangle\).</span>
+    <span class="problem-tags"><span class="tag vector">vector</span></span>
+  </div>
+  <div class="solution">
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(\|\mathbf{u}\|=\sqrt{9+16}=5\). Unit vector: \(\hat{\mathbf{u}}=\langle\tfrac{3}{5},-\tfrac{4}{5}\rangle\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Vector of length 5: \(5\hat{\mathbf{u}}=\langle3,-4\rangle\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(\langle3,-4\rangle\) (same vector, it already had length 5).</div>
+  </div>
+</div>
+
+<!-- 11.2 Problem 25 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">25</span>
+    <span class="problem-q">Let \(\mathbf{u}\) have magnitude 3 at angle \(30^\circ\) and \(\mathbf{v}\) have magnitude 2 at angle \(135^\circ\). Find \(\mathbf{u}+\mathbf{v}\) in component form and its magnitude and direction.</span>
+    <span class="problem-tags"><span class="tag vector">vector</span></span>
+  </div>
+  <div class="solution">
+    <div class="key-formula"><strong>Formula:</strong> \(\mathbf{v}=\|\mathbf{v}\|\langle\cos\theta,\sin\theta\rangle\)</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(\mathbf{u}=3\langle\cos30°,\sin30°\rangle=3\langle\frac{\sqrt{3}}{2},\frac{1}{2}\rangle=\langle\frac{3\sqrt{3}}{2},\frac{3}{2}\rangle\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">\(\mathbf{v}=2\langle\cos135°,\sin135°\rangle=2\langle-\frac{\sqrt{2}}{2},\frac{\sqrt{2}}{2}\rangle=\langle-\sqrt{2},\sqrt{2}\rangle\).</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">\(\mathbf{u}+\mathbf{v}=\langle\frac{3\sqrt{3}}{2}-\sqrt{2},\;\frac{3}{2}+\sqrt{2}\rangle\approx\langle1.185,2.914\rangle\).</div></div>
+      <div class="step"><span class="step-n">4</span><div class="step-body">\(\|\mathbf{u}+\mathbf{v}\|\approx\sqrt{1.185^2+2.914^2}\approx\sqrt{1.404+8.491}\approx\sqrt{9.895}\approx3.146\).</div></div>
+      <div class="step"><span class="step-n">5</span><div class="step-body">\(\theta=\arctan\!\left(\dfrac{2.914}{1.185}\right)\approx\arctan(2.459)\approx67.9°\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(\mathbf{u}+\mathbf{v}\approx\langle1.185,2.914\rangle\), magnitude \(\approx3.15\), direction \(\approx67.9°\).</div>
+    <div class="graph-wrap">
+      <div class="graph-title">Graph — Problem 25: Vectors \(\mathbf{u}\) (30°) and \(\mathbf{v}\) (135°) and their sum</div>
+      <div class="graph-div-sm" id="g-p25-vectors"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 11.2 Problem 26 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">26</span>
+    <span class="problem-q">Let \(\mathbf{u}=\langle2,3\rangle\) and \(\mathbf{v}=\langle1,-1\rangle\). Express \(\mathbf{w}=\langle5,1\rangle\) as a linear combination \(a\mathbf{u}+b\mathbf{v}\).</span>
+    <span class="problem-tags"><span class="tag vector">vector</span></span>
+  </div>
+  <div class="solution">
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Set up: \(a\langle2,3\rangle+b\langle1,-1\rangle=\langle5,1\rangle \implies 2a+b=5\) and \(3a-b=1\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Add: \(5a=6 \implies a=\tfrac{6}{5}\). Then \(b=5-2(\tfrac{6}{5})=5-\tfrac{12}{5}=\tfrac{13}{5}\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(\mathbf{w}=\tfrac{6}{5}\mathbf{u}+\tfrac{13}{5}\mathbf{v}\).</div>
+  </div>
+</div>
+
+<!-- 11.2 Problem 34 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">34</span>
+    <span class="problem-q">Find the vector \(\mathbf{v}\) that has magnitude 4 and makes equal positive angles with the coordinate axes.</span>
+    <span class="problem-tags"><span class="tag vector">vector</span></span>
+  </div>
+  <div class="solution">
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Equal angles means direction cosines equal: \(\cos\alpha=\cos\beta=\cos\gamma=c\). Then \(3c^2=1 \implies c=\tfrac{1}{\sqrt{3}}\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">Unit vector: \(\hat{\mathbf{v}}=\langle\tfrac{1}{\sqrt{3}},\tfrac{1}{\sqrt{3}},\tfrac{1}{\sqrt{3}}\rangle\).</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">\(\mathbf{v}=4\hat{\mathbf{v}}=\left\langle\dfrac{4}{\sqrt{3}},\dfrac{4}{\sqrt{3}},\dfrac{4}{\sqrt{3}}\right\rangle=\left\langle\dfrac{4\sqrt{3}}{3},\dfrac{4\sqrt{3}}{3},\dfrac{4\sqrt{3}}{3}\right\rangle\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(\mathbf{v}=\dfrac{4}{\sqrt{3}}\langle1,1,1\rangle\).</div>
+  </div>
+</div>
+
+<!-- 11.2 Problem 35 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">35</span>
+    <span class="problem-q">Is there a vector of magnitude 3 making angle \(30°\) with the \(x\)-axis and \(45°\) with the \(y\)-axis? Find it or show it's impossible.</span>
+    <span class="problem-tags"><span class="tag vector">vector</span></span>
+  </div>
+  <div class="solution">
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(\cos^2\alpha+\cos^2\beta+\cos^2\gamma=1\). With \(\alpha=30°, \beta=45°\):</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">\(\cos^230°+\cos^245°=\tfrac{3}{4}+\tfrac{1}{2}=\tfrac{5}{4}>1\). So \(\cos^2\gamma\) would be negative — impossible.</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> No such vector exists. The direction cosines must satisfy \(\cos^2\alpha+\cos^2\beta+\cos^2\gamma=1\), but \(\cos^230°+\cos^245°=\tfrac{5}{4}>1\).</div>
+  </div>
+</div>
+
+<!-- 11.2 Problem 36 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">36</span>
+    <span class="problem-q">A vector makes equal angles with the three coordinate axes and has \(\mathbf{v}\cdot\mathbf{i}=2\). Find \(\mathbf{v}\).</span>
+    <span class="problem-tags"><span class="tag vector">vector</span></span>
+  </div>
+  <div class="solution">
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Equal angles: \(\mathbf{v}=v\langle\tfrac{1}{\sqrt{3}},\tfrac{1}{\sqrt{3}},\tfrac{1}{\sqrt{3}}\rangle\) for some scalar \(v\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">\(\mathbf{v}\cdot\mathbf{i}=\dfrac{v}{\sqrt{3}}=2 \implies v=2\sqrt{3}\).</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">\(\mathbf{v}=2\sqrt{3}\cdot\langle\tfrac{1}{\sqrt{3}},\tfrac{1}{\sqrt{3}},\tfrac{1}{\sqrt{3}}\rangle=\langle2,2,2\rangle\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(\mathbf{v}=\langle2,2,2\rangle\).</div>
+  </div>
+</div>
+
+<!-- 11.2 Problem 40 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">40</span>
+    <span class="problem-q">Forces \(\mathbf{F}_1=\langle3,-4,0\rangle\) N and \(\mathbf{F}_2=\langle2,0,5\rangle\) N act on a particle. Find the resultant force and its magnitude.</span>
+    <span class="problem-tags"><span class="tag vector">vector</span></span>
+  </div>
+  <div class="solution">
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(\mathbf{F}=\mathbf{F}_1+\mathbf{F}_2=\langle3+2,-4+0,0+5\rangle=\langle5,-4,5\rangle\text{ N}\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">\(\|\mathbf{F}\|=\sqrt{25+16+25}=\sqrt{66}\approx8.12\text{ N}\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> Resultant \(\mathbf{F}=\langle5,-4,5\rangle\) N, magnitude \(=\sqrt{66}\approx8.12\) N.</div>
+  </div>
+</div>
+
+</div><!-- end s11_2 -->
+
+<div id="s11_3" class="section">
+<h2 class="section-title">11.3 — Dot Product; Projections</h2>
+<p class="section-subtitle">Dot product, angles between vectors, orthogonality, and projections</p>
+
+<div class="concepts-box">
+  <button class="concepts-toggle" onclick="toggleConcepts(this)">Key Concepts &amp; Formulas — Section 11.3</button>
+  <div class="concepts-body">
+    <div class="concept-grid">
+      <div class="concept-item"><span class="concept-label">Dot Product</span><span class="concept-desc">\(\mathbf{u}\cdot\mathbf{v}=u_1v_1+u_2v_2+u_3v_3=\|\mathbf{u}\|\|\mathbf{v}\|\cos\theta\)</span></div>
+      <div class="concept-item"><span class="concept-label">Angle</span><span class="concept-desc">\(\cos\theta=\dfrac{\mathbf{u}\cdot\mathbf{v}}{\|\mathbf{u}\|\|\mathbf{v}\|}\); orthogonal iff \(\mathbf{u}\cdot\mathbf{v}=0\)</span></div>
+      <div class="concept-item"><span class="concept-label">Scalar Proj.</span><span class="concept-desc">\(\text{comp}_{\mathbf{b}}\mathbf{v}=\dfrac{\mathbf{v}\cdot\mathbf{b}}{\|\mathbf{b}\|}\)</span></div>
+      <div class="concept-item"><span class="concept-label">Vector Proj.</span><span class="concept-desc">\(\text{proj}_{\mathbf{b}}\mathbf{v}=\dfrac{\mathbf{v}\cdot\mathbf{b}}{\|\mathbf{b}\|^2}\mathbf{b}\)</span></div>
+      <div class="concept-item"><span class="concept-label">Work</span><span class="concept-desc">\(W=\mathbf{F}\cdot\mathbf{d}=\|\mathbf{F}\|\|\mathbf{d}\|\cos\theta\)</span></div>
+      <div class="concept-item"><span class="concept-label">Distance (Pt–Line)</span><span class="concept-desc">\(d=\|\overrightarrow{AP}\times\mathbf{d}\|/\|\mathbf{d}\|\)</span></div>
+    </div>
+  </div>
+</div>
+
+<h3 class="problems-header">Problems</h3>
+
+<!-- 11.3 Problem 13 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">13</span>
+    <span class="problem-q">Find the angle between \(\mathbf{u}=\langle2,-1,3\rangle\) and \(\mathbf{v}=\langle1,2,1\rangle\).</span>
+  </div>
+  <div class="solution">
+    <div class="key-formula"><strong>Formula:</strong> \(\cos\theta=\dfrac{\mathbf{u}\cdot\mathbf{v}}{\|\mathbf{u}\|\|\mathbf{v}\|}\)</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(\mathbf{u}\cdot\mathbf{v}=2(1)+(-1)(2)+3(1)=2-2+3=3\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">\(\|\mathbf{u}\|=\sqrt{4+1+9}=\sqrt{14}\), \(\|\mathbf{v}\|=\sqrt{1+4+1}=\sqrt{6}\).</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">\(\cos\theta=\dfrac{3}{\sqrt{14}\cdot\sqrt{6}}=\dfrac{3}{\sqrt{84}}=\dfrac{3}{2\sqrt{21}}\).</div></div>
+      <div class="step"><span class="step-n">4</span><div class="step-body">\(\theta=\arccos\!\left(\dfrac{3}{2\sqrt{21}}\right)\approx\arccos(0.327)\approx70.9°\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(\theta\approx70.9°\) (or \(\approx1.237\) rad).</div>
+  </div>
+</div>
+
+<!-- 11.3 Problem 14 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">14</span>
+    <span class="problem-q">Find the angle between \(\mathbf{u}=\langle1,-2,0\rangle\) and \(\mathbf{v}=\langle3,1,-1\rangle\).</span>
+  </div>
+  <div class="solution">
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(\mathbf{u}\cdot\mathbf{v}=3-2+0=1\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">\(\|\mathbf{u}\|=\sqrt{5}\), \(\|\mathbf{v}\|=\sqrt{11}\).</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">\(\cos\theta=\dfrac{1}{\sqrt{55}}\), \(\theta=\arccos\!\left(\dfrac{1}{\sqrt{55}}\right)\approx82.2°\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(\theta\approx82.2°\).</div>
+  </div>
+</div>
+
+<!-- 11.3 Problem 25 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">25</span>
+    <span class="problem-q">Find the vector projection of \(\mathbf{v}=\langle3,1,-2\rangle\) onto \(\mathbf{b}=\langle1,2,2\rangle\), and the component orthogonal to \(\mathbf{b}\).</span>
+  </div>
+  <div class="solution">
+    <div class="key-formula"><strong>Formula:</strong> \(\text{proj}_{\mathbf{b}}\mathbf{v}=\dfrac{\mathbf{v}\cdot\mathbf{b}}{\|\mathbf{b}\|^2}\mathbf{b}\)</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(\mathbf{v}\cdot\mathbf{b}=3+2-4=1\); \(\|\mathbf{b}\|^2=1+4+4=9\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">\(\text{proj}_{\mathbf{b}}\mathbf{v}=\dfrac{1}{9}\langle1,2,2\rangle=\left\langle\tfrac{1}{9},\tfrac{2}{9},\tfrac{2}{9}\right\rangle\).</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">Orthogonal component: \(\mathbf{v}-\text{proj}_{\mathbf{b}}\mathbf{v}=\langle3-\tfrac{1}{9},1-\tfrac{2}{9},-2-\tfrac{2}{9}\rangle=\langle\tfrac{26}{9},\tfrac{7}{9},-\tfrac{20}{9}\rangle\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(\text{proj}=\langle\tfrac{1}{9},\tfrac{2}{9},\tfrac{2}{9}\rangle\); orthogonal component \(=\langle\tfrac{26}{9},\tfrac{7}{9},-\tfrac{20}{9}\rangle\).</div>
+  </div>
+</div>
+
+<!-- 11.3 Problem 27 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">27</span>
+    <span class="problem-q">Show that \(\mathbf{u}=\langle2,-3,1\rangle\) and \(\mathbf{v}=\langle1,1,1\rangle\) are orthogonal. Decompose \(\mathbf{w}=\langle3,0,2\rangle\) as \(\mathbf{w}=\mathbf{a}+\mathbf{b}\) where \(\mathbf{a}\parallel\mathbf{u}\) and \(\mathbf{b}\perp\mathbf{u}\).</span>
+  </div>
+  <div class="solution">
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">Check: \(\mathbf{u}\cdot\mathbf{v}=2-3+1=0\). ✓ They are orthogonal.</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">\(\mathbf{a}=\text{proj}_{\mathbf{u}}\mathbf{w}=\dfrac{\mathbf{w}\cdot\mathbf{u}}{\|\mathbf{u}\|^2}\mathbf{u}\). Compute: \(\mathbf{w}\cdot\mathbf{u}=6+0+2=8\), \(\|\mathbf{u}\|^2=4+9+1=14\).</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">\(\mathbf{a}=\dfrac{8}{14}\langle2,-3,1\rangle=\dfrac{4}{7}\langle2,-3,1\rangle=\left\langle\tfrac{8}{7},-\tfrac{12}{7},\tfrac{4}{7}\right\rangle\).</div></div>
+      <div class="step"><span class="step-n">4</span><div class="step-body">\(\mathbf{b}=\mathbf{w}-\mathbf{a}=\langle3-\tfrac{8}{7},0+\tfrac{12}{7},2-\tfrac{4}{7}\rangle=\left\langle\tfrac{13}{7},\tfrac{12}{7},\tfrac{10}{7}\right\rangle\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(\mathbf{w}=\langle\tfrac{8}{7},-\tfrac{12}{7},\tfrac{4}{7}\rangle+\langle\tfrac{13}{7},\tfrac{12}{7},\tfrac{10}{7}\rangle\).</div>
+  </div>
+</div>
+
+<!-- 11.3 Problem 35 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">35</span>
+    <span class="problem-q">Find the work done by force \(\mathbf{F}=\langle1,2,1\rangle\) in moving an object from \(A(1,0,0)\) to \(B(3,2,1)\).</span>
+  </div>
+  <div class="solution">
+    <div class="key-formula"><strong>Formula:</strong> \(W=\mathbf{F}\cdot\overrightarrow{AB}\)</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(\overrightarrow{AB}=\langle3-1,2-0,1-0\rangle=\langle2,2,1\rangle\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">\(W=\mathbf{F}\cdot\overrightarrow{AB}=\langle1,2,1\rangle\cdot\langle2,2,1\rangle=2+4+1=7\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(W=7\) (in appropriate units).</div>
+  </div>
+</div>
+
+<!-- 11.3 Problem 36 -->
+<div class="problem-card">
+  <div class="problem-header">
+    <span class="problem-num">36</span>
+    <span class="problem-q">Find the distance from the point \(P(1,2,3)\) to the line passing through \(A(0,0,0)\) with direction \(\mathbf{d}=\langle1,1,0\rangle\).</span>
+  </div>
+  <div class="solution">
+    <div class="key-formula"><strong>Formula:</strong> \(d=\dfrac{\|\overrightarrow{AP}\times\mathbf{d}\|}{\|\mathbf{d}\|}\)</div>
+    <div class="sol-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-body">\(\overrightarrow{AP}=\langle1,2,3\rangle\). \(\mathbf{d}=\langle1,1,0\rangle\).</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-body">\(\overrightarrow{AP}\times\mathbf{d}=\begin{vmatrix}\mathbf{i}&\mathbf{j}&\mathbf{k}\\1&2&3\\1&1&0\end{vmatrix}=\langle2\cdot0-3\cdot1,3\cdot1-1\cdot0,1\cdot1-2\cdot1\rangle=\langle-3,3,-1\rangle\).</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-body">\(\|\overrightarrow{AP}\times\mathbf{d}\|=\sqrt{9+9+1}=\sqrt{19}\); \(\|\mathbf{d}\|=\sqrt{2}\).</div></div>
+      <div class="step"><span class="step-n">4</span><div class="step-body">\(d=\dfrac{\sqrt{19}}{\sqrt{2}}=\sqrt{\dfrac{19}{2}}\approx3.08\).</div></div>
+    </div>
+    <div class="sol-answer"><strong>Answer:</strong> \(d=\sqrt{19/2}\approx3.08\).</div>
+  </div>
+</div>
+
+</div><!-- end s11_3 -->
+
+<div id="s11_4" class="section">
+<h2 class="section-title">11.4 — Cross Product</h2>
+<p class="section-subtitle">Cross product, area, volume, and triple products</p>
+<div class="concepts-box">
+  <button class="concepts-toggle" onclick="toggleConcepts(this)">Key Concepts &amp; Formulas — Section 11.4</button>
+  <div class="concepts-body"><div class="concept-grid">
+    <div class="concept-item"><span class="concept-label">Cross Product</span><span class="concept-desc">\(\mathbf{u}\times\mathbf{v}=\det\begin{vmatrix}\mathbf{i}&\mathbf{j}&\mathbf{k}\\u_1&u_2&u_3\\v_1&v_2&v_3\end{vmatrix}\)</span></div>
+    <div class="concept-item"><span class="concept-label">Magnitude</span><span class="concept-desc">\(\|\mathbf{u}\times\mathbf{v}\|=\|\mathbf{u}\|\|\mathbf{v}\|\sin\theta\)</span></div>
+    <div class="concept-item"><span class="concept-label">Area Para.</span><span class="concept-desc">Area of parallelogram spanned by \(\mathbf{u},\mathbf{v}\) is \(\|\mathbf{u}\times\mathbf{v}\|\)</span></div>
+    <div class="concept-item"><span class="concept-label">Triple Product</span><span class="concept-desc">Volume of parallelepiped \(=|\mathbf{u}\cdot(\mathbf{v}\times\mathbf{w})|\)</span></div>
+  </div></div>
+</div>
+<h3 class="problems-header">Problems</h3>
+<div class="problem-card"><div class="problem-header"><span class="problem-num">5</span><span class="problem-q">Compute \(\mathbf{u}\times\mathbf{v}\) for \(\mathbf{u}=\langle1,-2,3\rangle\), \(\mathbf{v}=\langle2,0,-1\rangle\).</span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">\(\mathbf{u}\times\mathbf{v}=\langle(-2)(-1)-(3)(0),\;(3)(2)-(1)(-1),\;(1)(0)-(-2)(2)\rangle=\langle2,7,4\rangle\).</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> \(\langle2,7,4\rangle\).</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">9</span><span class="problem-q">Find a vector orthogonal to both \(\mathbf{u}=\langle1,1,0\rangle\) and \(\mathbf{v}=\langle0,1,1\rangle\).</span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">\(\mathbf{u}\times\mathbf{v}=\langle(1)(1)-(0)(1),\;(0)(0)-(1)(1),\;(1)(1)-(1)(0)\rangle=\langle1,-1,1\rangle\).</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> \(\langle1,-1,1\rangle\) (or any scalar multiple).</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">10</span><span class="problem-q">Find the area of the parallelogram with sides \(\mathbf{u}=\langle3,1,0\rangle\) and \(\mathbf{v}=\langle1,2,0\rangle\).</span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">\(\mathbf{u}\times\mathbf{v}=\langle0,0,6-1\rangle=\langle0,0,5\rangle\).</div></div>
+  <div class="step"><span class="step-n">2</span><div class="step-body">Area \(=\|\mathbf{u}\times\mathbf{v}\|=5\).</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> Area \(=5\).</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">11</span><span class="problem-q">Find the area of the triangle with vertices \(A(1,0,0)\), \(B(0,2,0)\), \(C(0,0,3)\).</span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">\(\overrightarrow{AB}=\langle-1,2,0\rangle\), \(\overrightarrow{AC}=\langle-1,0,3\rangle\).</div></div>
+  <div class="step"><span class="step-n">2</span><div class="step-body">\(\overrightarrow{AB}\times\overrightarrow{AC}=\langle6,3,2\rangle\); magnitude \(=\sqrt{36+9+4}=7\).</div></div>
+  <div class="step"><span class="step-n">3</span><div class="step-body">Area \(=\tfrac{1}{2}\cdot7=\tfrac{7}{2}\).</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> Area \(=\tfrac{7}{2}\).</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">19</span><span class="problem-q">Find the volume of the parallelepiped with edges \(\mathbf{a}=\langle1,2,0\rangle\), \(\mathbf{b}=\langle2,1,0\rangle\), \(\mathbf{c}=\langle0,0,3\rangle\).</span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">Scalar triple product: \(\mathbf{a}\cdot(\mathbf{b}\times\mathbf{c})=\det\begin{vmatrix}1&2&0\\2&1&0\\0&0&3\end{vmatrix}=3(1-4)=-9\).</div></div>
+  <div class="step"><span class="step-n">2</span><div class="step-body">Volume \(=|-9|=9\).</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> Volume \(=9\).</div></div></div>
+</div>
+
+<div id="s11_5" class="section">
+<h2 class="section-title">11.5 — Parametric Equations of Lines</h2>
+<p class="section-subtitle">Lines in 3-space: parametric, symmetric, and relationships between lines</p>
+<div class="concepts-box">
+  <button class="concepts-toggle" onclick="toggleConcepts(this)">Key Concepts &amp; Formulas — Section 11.5</button>
+  <div class="concepts-body"><div class="concept-grid">
+    <div class="concept-item"><span class="concept-label">Parametric</span><span class="concept-desc">\(x=x_0+at,\;y=y_0+bt,\;z=z_0+ct\); direction \(\mathbf{d}=\langle a,b,c\rangle\)</span></div>
+    <div class="concept-item"><span class="concept-label">Symmetric</span><span class="concept-desc">\(\dfrac{x-x_0}{a}=\dfrac{y-y_0}{b}=\dfrac{z-z_0}{c}\)</span></div>
+    <div class="concept-item"><span class="concept-label">Parallel</span><span class="concept-desc">Lines parallel iff direction vectors proportional</span></div>
+    <div class="concept-item"><span class="concept-label">Skew</span><span class="concept-desc">Not parallel AND no intersection ⟹ skew lines</span></div>
+  </div></div>
+</div>
+<h3 class="problems-header">Problems</h3>
+<div class="problem-card"><div class="problem-header"><span class="problem-num">4</span><span class="problem-q">Find parametric equations for the line through \((2,-1,3)\) with direction \(\langle1,2,-2\rangle\).</span></div>
+<div class="solution"><div class="sol-answer"><strong>Answer:</strong> \(x=2+t,\;y=-1+2t,\;z=3-2t\).</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">7</span><span class="problem-q">Find parametric and symmetric equations for the line through \(A(1,2,3)\) and \(B(3,0,1)\).</span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">Direction: \(\mathbf{d}=\overrightarrow{AB}=\langle2,-2,-2\rangle\), simplify: \(\langle1,-1,-1\rangle\).</div></div>
+  <div class="step"><span class="step-n">2</span><div class="step-body">Parametric: \(x=1+t,\;y=2-t,\;z=3-t\).</div></div>
+  <div class="step"><span class="step-n">3</span><div class="step-body">Symmetric: \(\dfrac{x-1}{1}=\dfrac{y-2}{-1}=\dfrac{z-3}{-1}\).</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> \(x=1+t,\;y=2-t,\;z=3-t\).</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">17</span><span class="problem-q">Determine whether the lines \(L_1: x=1+t,\;y=2t,\;z=3-t\) and \(L_2: x=2+s,\;y=3+s,\;z=1+s\) are parallel, intersecting, or skew.</span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">Directions: \(\mathbf{d}_1=\langle1,2,-1\rangle\), \(\mathbf{d}_2=\langle1,1,1\rangle\). Not proportional \(\Rightarrow\) not parallel.</div></div>
+  <div class="step"><span class="step-n">2</span><div class="step-body">Set equal: \(1+t=2+s\), \(2t=3+s\), \(3-t=1+s\). From eq 1: \(t-s=1\). From eq 3: \(-t-s=-2\Rightarrow t+s=2\). So \(t=\tfrac{3}{2}, s=\tfrac{1}{2}\). Check eq 2: \(2(\tfrac{3}{2})=3+\tfrac{1}{2}\Rightarrow3\neq3.5\). Inconsistent.</div></div>
+  <div class="step"><span class="step-n">3</span><div class="step-body">Not parallel and no intersection \(\Rightarrow\) skew.</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> Skew lines.</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">29</span><span class="problem-q">Find the intersection point of lines \(L_1: x=t,\;y=2t,\;z=3t\) and \(L_2: x=1+s,\;y=1+s,\;z=2+s\).</span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">Set equal: \(t=1+s\), \(2t=1+s\), \(3t=2+s\).</div></div>
+  <div class="step"><span class="step-n">2</span><div class="step-body">From eq 1 and 2: \(t=2t-1+1\Rightarrow\) sub eq1 into eq2: \(2(1+s)=1+s\Rightarrow2+2s=1+s\Rightarrow s=-1\), so \(t=0\).</div></div>
+  <div class="step"><span class="step-n">3</span><div class="step-body">Check eq 3: \(3(0)=2+(-1)=1\). \(0\neq1\). Inconsistent — lines are skew.</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> Lines are skew (no intersection).</div></div></div>
+</div>
+
+<div id="s11_6" class="section">
+<h2 class="section-title">11.6 — Planes in 3-Space</h2>
+<p class="section-subtitle">Equations of planes, distances, and intersections</p>
+<div class="concepts-box">
+  <button class="concepts-toggle" onclick="toggleConcepts(this)">Key Concepts &amp; Formulas — Section 11.6</button>
+  <div class="concepts-body"><div class="concept-grid">
+    <div class="concept-item"><span class="concept-label">Plane Eq.</span><span class="concept-desc">\(a(x-x_0)+b(y-y_0)+c(z-z_0)=0\) where \(\mathbf{n}=\langle a,b,c\rangle\) is normal</span></div>
+    <div class="concept-item"><span class="concept-label">Normal from ×</span><span class="concept-desc">\(\mathbf{n}=\mathbf{v}_1\times\mathbf{v}_2\) for two vectors lying in the plane</span></div>
+    <div class="concept-item"><span class="concept-label">Pt–Plane Dist.</span><span class="concept-desc">\(d=\dfrac{|ax_0+by_0+cz_0-d|}{\sqrt{a^2+b^2+c^2}}\)</span></div>
+    <div class="concept-item"><span class="concept-label">Line of Intersect.</span><span class="concept-desc">Direction \(\mathbf{d}=\mathbf{n}_1\times\mathbf{n}_2\)</span></div>
+  </div></div>
+</div>
+<h3 class="problems-header">Problems</h3>
+<div class="problem-card"><div class="problem-header"><span class="problem-num">11</span><span class="problem-q">Find the equation of the plane through \(P(1,2,3)\) with normal \(\mathbf{n}=\langle2,-1,4\rangle\).</span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">\(2(x-1)-(y-2)+4(z-3)=0\Rightarrow2x-y+4z=12\).</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> \(2x-y+4z=12\).</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">17</span><span class="problem-q">Find the plane through three points \(A(1,0,0)\), \(B(0,2,0)\), \(C(0,0,3)\).</span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">\(\overrightarrow{AB}=\langle-1,2,0\rangle\), \(\overrightarrow{AC}=\langle-1,0,3\rangle\).</div></div>
+  <div class="step"><span class="step-n">2</span><div class="step-body">\(\mathbf{n}=\overrightarrow{AB}\times\overrightarrow{AC}=\langle6,3,2\rangle\).</div></div>
+  <div class="step"><span class="step-n">3</span><div class="step-body">Using point \(A\): \(6(x-1)+3y+2z=0\Rightarrow6x+3y+2z=6\).</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> \(6x+3y+2z=6\), or equivalently \(\dfrac{x}{1}+\dfrac{y}{2}+\dfrac{z}{3}=1\).</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">26</span><span class="problem-q">Find the distance from \(P(2,1,-1)\) to the plane \(x+2y-2z=5\).</span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">\(d=\dfrac{|1(2)+2(1)-2(-1)-5|}{\sqrt{1+4+4}}=\dfrac{|2+2+2-5|}{3}=\dfrac{1}{3}\).</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> \(d=\tfrac{1}{3}\).</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">29</span><span class="problem-q">Find the line of intersection of planes \(x+y+z=1\) and \(2x-y+z=2\).</span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">Direction: \(\mathbf{d}=\mathbf{n}_1\times\mathbf{n}_2=\langle1,1,1\rangle\times\langle2,-1,1\rangle=\langle2,1,-3\rangle\).</div></div>
+  <div class="step"><span class="step-n">2</span><div class="step-body">Find a point: set \(z=0\): \(x+y=1\), \(2x-y=2\); adding: \(3x=3\Rightarrow x=1,y=0\). Point: \((1,0,0)\).</div></div>
+  <div class="step"><span class="step-n">3</span><div class="step-body">Line: \(x=1+2t,\;y=t,\;z=-3t\).</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> \(x=1+2t,\;y=t,\;z=-3t\).</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">33</span><span class="problem-q">Find the angle between planes \(x+y+z=1\) and \(x-y+z=0\).</span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">\(\mathbf{n}_1=\langle1,1,1\rangle\), \(\mathbf{n}_2=\langle1,-1,1\rangle\). \(\cos\theta=\dfrac{|\mathbf{n}_1\cdot\mathbf{n}_2|}{\|\mathbf{n}_1\|\|\mathbf{n}_2\|}=\dfrac{|1-1+1|}{\sqrt{3}\sqrt{3}}=\dfrac{1}{3}\).</div></div>
+  <div class="step"><span class="step-n">2</span><div class="step-body">\(\theta=\arccos(\tfrac{1}{3})\approx70.5°\).</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> \(\theta\approx70.5°\).</div></div></div>
+</div>
+
+<div id="s11_7" class="section">
+<h2 class="section-title">11.7 — Quadric Surfaces</h2>
+<p class="section-subtitle">Identifying and graphing quadric surfaces in 3-space</p>
+<div class="concepts-box">
+  <button class="concepts-toggle" onclick="toggleConcepts(this)">Key Concepts &amp; Formulas — Section 11.7</button>
+  <div class="concepts-body"><div class="concept-grid">
+    <div class="concept-item"><span class="concept-label">Ellipsoid</span><span class="concept-desc">\(\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}+\dfrac{z^2}{c^2}=1\) — closed, all cross-sections ellipses/circles</span></div>
+    <div class="concept-item"><span class="concept-label">Elliptic Cone</span><span class="concept-desc">\(\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=\dfrac{z^2}{c^2}\) — vertex at origin, hourglass shape</span></div>
+    <div class="concept-item"><span class="concept-label">Elliptic Paraboloid</span><span class="concept-desc">\(z=\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}\) — opens along \(z\)</span></div>
+    <div class="concept-item"><span class="concept-label">Hyperbolic Paraboloid</span><span class="concept-desc">\(z=\dfrac{y^2}{b^2}-\dfrac{x^2}{a^2}\) — saddle shape</span></div>
+    <div class="concept-item"><span class="concept-label">Hyperboloid 1-sheet</span><span class="concept-desc">\(\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}-\dfrac{z^2}{c^2}=1\) — connected surface</span></div>
+    <div class="concept-item"><span class="concept-label">Hyperboloid 2-sheets</span><span class="concept-desc">\(\dfrac{z^2}{c^2}-\dfrac{x^2}{a^2}-\dfrac{y^2}{b^2}=1\) — two separate pieces</span></div>
+  </div></div>
+</div>
+<h3 class="problems-header">Problems</h3>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">7</span><span class="problem-q">Identify and describe: \(z=x^2+y^2\).</span><span class="problem-tags"><span class="tag surface">surface</span></span></div>
+<div class="solution"><div class="sol-answer"><strong>Answer:</strong> Circular paraboloid opening upward along the \(z\)-axis, vertex at origin.</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">9</span><span class="problem-q">Identify and describe: \(z^2=x^2+y^2\).</span><span class="problem-tags"><span class="tag surface">surface</span></span></div>
+<div class="solution"><div class="sol-answer"><strong>Answer:</strong> Circular cone (double cone) with axis along \(z\), vertex at origin. Cross-sections \(z=k\) are circles of radius \(|k|\).</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">15</span><span class="problem-q">Identify and sketch: \(\dfrac{x^2}{4}+\dfrac{y^2}{9}+\dfrac{z^2}{1}=1\).</span><span class="problem-tags"><span class="tag surface">surface</span></span></div>
+<div class="solution">
+  <div class="sol-overview">Three different semi-axes: ellipsoid.</div>
+  <div class="sol-steps">
+    <div class="step"><span class="step-n">1</span><div class="step-body">\(a=2, b=3, c=1\). Intercepts: \((\pm2,0,0)\), \((0,\pm3,0)\), \((0,0,\pm1)\).</div></div>
+  </div>
+  <div class="sol-answer"><strong>Answer:</strong> Ellipsoid with semi-axes 2, 3, 1.</div>
+  <div class="graph-wrap"><div class="graph-title">3D Graph — Ellipsoid \(\frac{x^2}{4}+\frac{y^2}{9}+z^2=1\)</div><div class="graph-div-3d" id="g-ellipsoid"></div></div>
+</div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">17</span><span class="problem-q">Identify and sketch: \(\dfrac{x^2}{4}+\dfrac{y^2}{9}-\dfrac{z^2}{1}=1\).</span><span class="problem-tags"><span class="tag surface">surface</span></span></div>
+<div class="solution">
+  <div class="sol-answer"><strong>Answer:</strong> Hyperboloid of one sheet. Axis along \(z\); \(z=0\) cross-section is the ellipse \(\tfrac{x^2}{4}+\tfrac{y^2}{9}=1\).</div>
+  <div class="graph-wrap"><div class="graph-title">3D Graph — Hyperboloid 1 Sheet: \(\frac{x^2}{4}+\frac{y^2}{9}-z^2=1\)</div><div class="graph-div-3d" id="g-hyp1"></div></div>
+</div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">19</span><span class="problem-q">Identify and sketch: \(z^2=\dfrac{x^2}{4}+\dfrac{y^2}{9}\).</span><span class="problem-tags"><span class="tag surface">surface</span></span></div>
+<div class="solution">
+  <div class="sol-answer"><strong>Answer:</strong> Elliptic cone with vertex at origin, axis along \(z\).</div>
+  <div class="graph-wrap"><div class="graph-title">3D Graph — Elliptic Cone: \(z^2=\frac{x^2}{4}+\frac{y^2}{9}\)</div><div class="graph-div-3d" id="g-cone"></div></div>
+</div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">21</span><span class="problem-q">Identify and sketch: \(\dfrac{z^2}{4}-\dfrac{x^2}{1}-\dfrac{y^2}{1}=1\).</span><span class="problem-tags"><span class="tag surface">surface</span></span></div>
+<div class="solution">
+  <div class="sol-answer"><strong>Answer:</strong> Hyperboloid of two sheets. Axis along \(z\); exists only for \(|z|\geq2\).</div>
+  <div class="graph-wrap"><div class="graph-title">3D Graph — Hyperboloid 2 Sheets: \(\frac{z^2}{4}-x^2-y^2=1\)</div><div class="graph-div-3d" id="g-hyp2"></div></div>
+</div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">23</span><span class="problem-q">Identify and sketch: \(z=y^2-x^2\).</span><span class="problem-tags"><span class="tag surface">surface</span></span></div>
+<div class="solution">
+  <div class="sol-answer"><strong>Answer:</strong> Hyperbolic paraboloid (saddle surface). Cross-sections \(y=k\): parabolas opening up; cross-sections \(x=k\): parabolas opening down.</div>
+  <div class="graph-wrap"><div class="graph-title">3D Graph — Hyperbolic Paraboloid (Saddle): \(z=y^2-x^2\)</div><div class="graph-div-3d" id="g-saddle"></div></div>
+</div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">25</span><span class="problem-q">Identify and sketch: \(z=x^2+\dfrac{y^2}{4}\).</span><span class="problem-tags"><span class="tag surface">surface</span></span></div>
+<div class="solution">
+  <div class="sol-answer"><strong>Answer:</strong> Elliptic paraboloid opening upward. Cross-sections \(z=k>0\) are ellipses \(x^2+\tfrac{y^2}{4}=k\).</div>
+  <div class="graph-wrap"><div class="graph-title">3D Graph — Elliptic Paraboloid: \(z=x^2+\frac{y^2}{4}\)</div><div class="graph-div-3d" id="g-eparab"></div></div>
+</div></div>
+</div>
+
+<div id="s11_8" class="section">
+<h2 class="section-title">11.8 — Cylindrical and Spherical Coordinates</h2>
+<p class="section-subtitle">Converting between rectangular, cylindrical, and spherical coordinate systems</p>
+<div class="concepts-box">
+  <button class="concepts-toggle" onclick="toggleConcepts(this)">Key Concepts &amp; Formulas — Section 11.8</button>
+  <div class="concepts-body"><div class="concept-grid">
+    <div class="concept-item"><span class="concept-label">Cyl → Rect</span><span class="concept-desc">\(x=r\cos\theta,\;y=r\sin\theta,\;z=z\)</span></div>
+    <div class="concept-item"><span class="concept-label">Rect → Cyl</span><span class="concept-desc">\(r=\sqrt{x^2+y^2},\;\tan\theta=y/x,\;z=z\)</span></div>
+    <div class="concept-item"><span class="concept-label">Sph → Rect</span><span class="concept-desc">\(x=\rho\sin\phi\cos\theta,\;y=\rho\sin\phi\sin\theta,\;z=\rho\cos\phi\)</span></div>
+    <div class="concept-item"><span class="concept-label">Rect → Sph</span><span class="concept-desc">\(\rho=\sqrt{x^2+y^2+z^2},\;\tan\theta=y/x,\;\cos\phi=z/\rho\)</span></div>
+  </div></div>
+</div>
+<h3 class="problems-header">Problems</h3>
+<div class="problem-card"><div class="problem-header"><span class="problem-num">3</span><span class="problem-q">Convert cylindrical \((r,\theta,z)=(2,\pi/3,1)\) to rectangular coordinates.</span><span class="problem-tags"><span class="tag coord">coord</span></span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">\(x=2\cos(\pi/3)=2\cdot\tfrac{1}{2}=1\); \(y=2\sin(\pi/3)=2\cdot\tfrac{\sqrt{3}}{2}=\sqrt{3}\); \(z=1\).</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> \((1,\sqrt{3},1)\).</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">5</span><span class="problem-q">Convert rectangular \((1,1,1)\) to cylindrical coordinates.</span><span class="problem-tags"><span class="tag coord">coord</span></span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">\(r=\sqrt{1+1}=\sqrt{2}\); \(\theta=\arctan(1/1)=\pi/4\); \(z=1\).</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> \((\sqrt{2},\pi/4,1)\).</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">7</span><span class="problem-q">Convert spherical \((\rho,\theta,\phi)=(4,\pi/4,\pi/3)\) to rectangular.</span><span class="problem-tags"><span class="tag coord">coord</span></span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">\(x=4\sin(\pi/3)\cos(\pi/4)=4\cdot\tfrac{\sqrt{3}}{2}\cdot\tfrac{\sqrt{2}}{2}=\sqrt{6}\).</div></div>
+  <div class="step"><span class="step-n">2</span><div class="step-body">\(y=4\sin(\pi/3)\sin(\pi/4)=\sqrt{6}\); \(z=4\cos(\pi/3)=4\cdot\tfrac{1}{2}=2\).</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> \((\sqrt{6},\sqrt{6},2)\).</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">9</span><span class="problem-q">Convert rectangular \((0,2\sqrt{3},2)\) to spherical coordinates.</span><span class="problem-tags"><span class="tag coord">coord</span></span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">\(\rho=\sqrt{0+12+4}=4\).</div></div>
+  <div class="step"><span class="step-n">2</span><div class="step-body">\(\theta=\pi/2\) (since \(x=0,y>0\)); \(\cos\phi=z/\rho=2/4=1/2\Rightarrow\phi=\pi/3\).</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> \((4,\pi/2,\pi/3)\).</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">11</span><span class="problem-q">Convert the cylindrical equation \(r=3\) to rectangular and spherical.</span><span class="problem-tags"><span class="tag coord">coord</span></span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">Rectangular: \(r=3\Rightarrow\sqrt{x^2+y^2}=3\Rightarrow x^2+y^2=9\) (cylinder).</div></div>
+  <div class="step"><span class="step-n">2</span><div class="step-body">Spherical: \(r=\rho\sin\phi=3\Rightarrow\rho\sin\phi=3\).</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> Rect: \(x^2+y^2=9\); Spherical: \(\rho\sin\phi=3\).</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">24</span><span class="problem-q">Convert \(\rho=4\cos\phi\) to rectangular form.</span><span class="problem-tags"><span class="tag coord">coord</span></span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">Multiply both sides by \(\rho\): \(\rho^2=4\rho\cos\phi\).</div></div>
+  <div class="step"><span class="step-n">2</span><div class="step-body">\(x^2+y^2+z^2=4z\Rightarrow x^2+y^2+(z-2)^2=4\). A sphere!</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> Sphere \(x^2+y^2+(z-2)^2=4\), center \((0,0,2)\), radius 2.</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">33</span><span class="problem-q">Convert \(x^2+y^2=z^2\) to cylindrical and spherical.</span><span class="problem-tags"><span class="tag coord">coord</span></span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">Cylindrical: \(r^2=z^2\Rightarrow r=|z|\).</div></div>
+  <div class="step"><span class="step-n">2</span><div class="step-body">Spherical: \(\rho^2\sin^2\phi=\rho^2\cos^2\phi\Rightarrow\tan^2\phi=1\Rightarrow\phi=\pi/4\) (or \(3\pi/4\) for other sheet).</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> Cylindrical: \(r=|z|\); Spherical: \(\phi=\pi/4\) (and \(\phi=3\pi/4\)).</div></div></div>
+</div>
+
+<div id="s13_1" class="section">
+<h2 class="section-title">13.1 — Functions of Two or More Variables</h2>
+<p class="section-subtitle">Domain, range, level curves, and level surfaces</p>
+<div class="concepts-box">
+  <button class="concepts-toggle" onclick="toggleConcepts(this)">Key Concepts &amp; Formulas — Section 13.1</button>
+  <div class="concepts-body"><div class="concept-grid">
+    <div class="concept-item"><span class="concept-label">Domain</span><span class="concept-desc">Set of all \((x,y)\) for which \(f(x,y)\) is defined (no division by zero, no negative sqrt, etc.)</span></div>
+    <div class="concept-item"><span class="concept-label">Level Curves</span><span class="concept-desc">\(f(x,y)=k\) gives a curve in the \(xy\)-plane for each constant \(k\)</span></div>
+    <div class="concept-item"><span class="concept-label">Level Surfaces</span><span class="concept-desc">\(f(x,y,z)=k\) gives a surface in \(\mathbb{R}^3\)</span></div>
+    <div class="concept-item"><span class="concept-label">Range</span><span class="concept-desc">Set of all output values \(f(x,y)\) as \((x,y)\) varies over the domain</span></div>
+  </div></div>
+</div>
+<h3 class="problems-header">Problems</h3>
+<div class="problem-card"><div class="problem-header"><span class="problem-num">1</span><span class="problem-q">Find the domain and range of \(f(x,y)=\sqrt{x+y}\).</span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">Domain: need \(x+y\geq0\), i.e. the half-plane \(\{(x,y):y\geq-x\}\).</div></div>
+  <div class="step"><span class="step-n">2</span><div class="step-body">Range: \(\sqrt{x+y}\geq0\), and can be any non-negative value. Range \(=[0,\infty)\).</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> Domain: \(x+y\geq0\); Range: \([0,\infty)\).</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">3</span><span class="problem-q">Find the domain and range of \(f(x,y)=\dfrac{1}{x^2+y^2}\).</span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">Domain: \(x^2+y^2\neq0\), i.e., all \((x,y)\neq(0,0)\). Domain = \(\mathbb{R}^2\setminus\{(0,0)\}\).</div></div>
+  <div class="step"><span class="step-n">2</span><div class="step-body">Range: \(x^2+y^2>0\) so \(f>0\); it can be arbitrarily large or small. Range \(=(0,\infty)\).</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> Domain: \(\mathbb{R}^2\setminus\{(0,0)\}\); Range: \((0,\infty)\).</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">6</span><span class="problem-q">Find the domain of \(f(x,y)=\ln(y-x^2)\).</span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">Need \(y-x^2>0\Rightarrow y>x^2\). Domain is the open region above the parabola \(y=x^2\).</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> \(\{(x,y): y>x^2\}\).</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">7</span><span class="problem-q">Describe the level curves of \(f(x,y)=x^2+y^2\) for \(k=0,1,4,9\).</span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">Level curve \(f=k\): \(x^2+y^2=k\). For \(k=0\): point \((0,0)\). For \(k=1,4,9\): circles of radius \(1, 2, 3\).</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> Concentric circles centered at origin, radii \(0,1,2,3\).</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">8</span><span class="problem-q">Describe the level curves of \(f(x,y)=x-y\) for \(k=-2,-1,0,1,2\).</span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">\(x-y=k\Rightarrow y=x-k\). These are lines with slope 1, \(y\)-intercepts \(-k=2,1,0,-1,-2\).</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> Family of parallel lines \(y=x-k\) with slope 1.</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">18</span><span class="problem-q">Find the domain and range of \(f(x,y,z)=\sqrt{9-x^2-y^2-z^2}\).</span></div>
+<div class="solution"><div class="sol-steps">
+  <div class="step"><span class="step-n">1</span><div class="step-body">Domain: \(9-x^2-y^2-z^2\geq0\Rightarrow x^2+y^2+z^2\leq9\). Solid ball of radius 3.</div></div>
+  <div class="step"><span class="step-n">2</span><div class="step-body">Range: \(f\in[0,3]\).</div></div>
+</div><div class="sol-answer"><strong>Answer:</strong> Domain: closed ball \(x^2+y^2+z^2\leq9\); Range: \([0,3]\).</div></div></div>
+
+<div class="problem-card"><div class="problem-header"><span class="problem-num">67</span><span class="problem-q">Sketch level curves of \(f(x,y)=x^2+y^2\) and identify the surface \(z=x^2+y^2\).</span></div>
+<div class="solution">
+  <div class="sol-steps">
+    <div class="step"><span class="step-n">1</span><div class="step-body">Level curves \(z=k\): circles \(x^2+y^2=k\) of radius \(\sqrt{k}\) for \(k\geq0\).</div></div>
+    <div class="step"><span class="step-n">2</span><div class="step-body">The surface is a circular paraboloid opening upward.</div></div>
+  </div>
+  <div class="sol-answer"><strong>Answer:</strong> Level curves are concentric circles; surface is a circular paraboloid.</div>
+  <div class="graph-wrap"><div class="graph-title">Level Curves of \(f(x,y)=x^2+y^2\) (Problem 67)</div><div class="graph-div" id="g-level"></div></div>
+</div></div>
+</div>
+</main>
+<script>
+// Navigation
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.target).classList.add('active');
+    window.scrollTo(0,0);
+  });
+});
+
+function toggleConcepts(btn) {
+  btn.classList.toggle('collapsed');
+  btn.nextElementSibling.classList.toggle('hidden');
+}
+
+// Graphs
+window.addEventListener('load', () => {
+  if(typeof MathJax !== 'undefined') MathJax.typesetPromise();
+  drawGraphs();
+});
+
+function drawGraphs() {
+  const dark = {paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'#1c1c28', font:{color:'#e2e2ef'}, margin:{t:20,b:40,l:50,r:20}};
+  const axStyle = {gridcolor:'#2a2a3e', zerolinecolor:'#4a4a6e', color:'#8888aa'};
+
+  // 10.4 P3 Parabolas
+  if(document.getElementById('g-p3-parabola')) {
+    const t = Array.from({length:80}, (_,i) => -4+i*8/79);
+    const p1x = t.map(v => v*v/4), p1y = t;
+    const p2x = t.map(v => v*v/(-32)), p2y = t;
+    Plotly.newPlot('g-p3-parabola',[
+      {x:p1x,y:p1y,mode:'lines',name:'y²=4x',line:{color:'#5fad8a',width:2}},
+      {x:p2x,y:p2y,mode:'lines',name:'x²=-8y',line:{color:'#e8c97a',width:2}},
+      {x:[1],y:[0],mode:'markers+text',text:['F(1,0)'],textposition:'top right',marker:{color:'#c9a84c',size:8},showlegend:false},
+      {x:[0],y:[-2],mode:'markers+text',text:['F(0,-2)'],textposition:'top right',marker:{color:'#c9a84c',size:8},showlegend:false}
+    ],{...dark,xaxis:{...axStyle,range:[-6,6],title:'x'},yaxis:{...axStyle,range:[-5,5],title:'y'},legend:{bgcolor:'rgba(0,0,0,0)'}});
+  }
+
+  // 10.4 P7 Ellipses
+  if(document.getElementById('g-p7-ellipse')) {
+    const th = Array.from({length:200}, (_,i) => i*2*Math.PI/199);
+    Plotly.newPlot('g-p7-ellipse',[
+      {x:th.map(t=>4*Math.cos(t)),y:th.map(t=>3*Math.sin(t)),mode:'lines',name:'x²/16+y²/9=1',line:{color:'#5b9bd5',width:2}},
+      {x:th.map(t=>1*Math.cos(t)),y:th.map(t=>3*Math.sin(t)),mode:'lines',name:'x²+y²/9=1',line:{color:'#e06c75',width:2}}
+    ],{...dark,xaxis:{...axStyle,range:[-5,5],title:'x',scaleanchor:'y'},yaxis:{...axStyle,range:[-4,4],title:'y'},legend:{bgcolor:'rgba(0,0,0,0)'}});
+  }
+
+  // 10.4 P11 Hyperbola
+  if(document.getElementById('g-p11-hyperbola')) {
+    const t2 = Array.from({length:80}, (_,i) => -2+i*4/79);
+    const xR = t2.map(v=>4*Math.cosh(v)), xL = t2.map(v=>-4*Math.cosh(v)), yH = t2.map(v=>3*Math.sinh(v));
+    const xa = Array.from({length:100},(_,i)=>-6+i*12/99);
+    Plotly.newPlot('g-p11-hyperbola',[
+      {x:xR,y:yH,mode:'lines',name:'Right branch',line:{color:'#e06c75',width:2}},
+      {x:xL,y:yH,mode:'lines',name:'Left branch',line:{color:'#e06c75',width:2},showlegend:false},
+      {x:xa,y:xa.map(x=>3*x/4),mode:'lines',name:'y=¾x',line:{color:'#c9a84c',width:1,dash:'dash'}},
+      {x:xa,y:xa.map(x=>-3*x/4),mode:'lines',name:'y=-¾x',line:{color:'#c9a84c',width:1,dash:'dash'}}
+    ],{...dark,xaxis:{...axStyle,range:[-7,7],title:'x'},yaxis:{...axStyle,range:[-6,6],title:'y'},legend:{bgcolor:'rgba(0,0,0,0)'}});
+  }
+
+  // 11.2 P25 Vectors
+  if(document.getElementById('g-p25-vectors')) {
+    const u=[3*Math.cos(Math.PI/6),3*Math.sin(Math.PI/6)], v=[2*Math.cos(3*Math.PI/4),2*Math.sin(3*Math.PI/4)];
+    const s=[u[0]+v[0],u[1]+v[1]];
+    Plotly.newPlot('g-p25-vectors',[
+      {x:[0,u[0]],y:[0,u[1]],mode:'lines+markers',name:'u (30°, |u|=3)',line:{color:'#5fad8a',width:3},marker:{size:[0,8]}},
+      {x:[0,v[0]],y:[0,v[1]],mode:'lines+markers',name:'v (135°, |v|=2)',line:{color:'#5b9bd5',width:3},marker:{size:[0,8]}},
+      {x:[0,s[0]],y:[0,s[1]],mode:'lines+markers',name:'u+v',line:{color:'#e8c97a',width:3},marker:{size:[0,8]}},
+      {x:[u[0],s[0]],y:[u[1],s[1]],mode:'lines',name:'',line:{color:'#5b9bd5',width:1,dash:'dot'},showlegend:false}
+    ],{...dark,xaxis:{...axStyle,range:[-2,4],title:'x'},yaxis:{...axStyle,range:[-0.5,3.5],title:'y'},legend:{bgcolor:'rgba(0,0,0,0)'}});
+  }
+
+  // Level curves
+  if(document.getElementById('g-level')) {
+    const nx=60,ny=60, xs=Array.from({length:nx},(_,i)=>-3+6*i/(nx-1)), ys=Array.from({length:ny},(_,i)=>-3+6*i/(ny-1));
+    const z=ys.map(y=>xs.map(x=>x*x+y*y));
+    Plotly.newPlot('g-level',[{type:'contour',x:xs,y:ys,z:z,colorscale:[[0,'#1c1c28'],[0.5,'#7c6fcd'],[1,'#e8c97a']],contours:{coloring:'lines',showlabels:true,start:0,end:8,size:1},line:{width:2},showscale:false}],
+    {...dark,xaxis:{...axStyle,title:'x'},yaxis:{...axStyle,title:'y'}});
+  }
+
+  // 3D surfaces
+  function meshgrid(xs,ys,fn){return ys.map(y=>xs.map(x=>fn(x,y)));}
+  const rng=(n,a,b)=>Array.from({length:n},(_,i)=>a+(b-a)*i/(n-1));
+
+  if(document.getElementById('g-ellipsoid')){
+    const u=rng(30,0,2*Math.PI),v=rng(20,0,Math.PI);
+    const x=v.map(vi=>u.map(ui=>2*Math.sin(vi)*Math.cos(ui)));
+    const y=v.map(vi=>u.map(ui=>3*Math.sin(vi)*Math.sin(ui)));
+    const z=v.map(vi=>u.map(ui=>1*Math.cos(vi)));
+    Plotly.newPlot('g-ellipsoid',[{type:'surface',x,y,z,colorscale:[[0,'#1a1a3a'],[1,'#7c6fcd']],opacity:0.9,showscale:false}],
+    {...dark,scene:{xaxis:{...axStyle},yaxis:{...axStyle},zaxis:{...axStyle},bgcolor:'#14141e'},margin:{t:10,b:10,l:10,r:10}});
+  }
+
+  if(document.getElementById('g-hyp1')){
+    const xs=rng(30,-3,3),ys=rng(30,-3,3);
+    const z=meshgrid(xs,ys,(x,y)=>{const v=1-x*x/4-y*y/9;return v<0?null:Math.sqrt(v);});
+    const z2=meshgrid(xs,ys,(x,y)=>{const v=1-x*x/4-y*y/9;return v<0?null:-Math.sqrt(v);});
+    Plotly.newPlot('g-hyp1',[
+      {type:'surface',x:xs,y:ys,z:z,colorscale:[[0,'#1a2a3a'],[1,'#5b9bd5']],showscale:false,opacity:0.85},
+      {type:'surface',x:xs,y:ys,z:z2,colorscale:[[0,'#1a2a3a'],[1,'#5b9bd5']],showscale:false,opacity:0.85}
+    ],{...dark,scene:{xaxis:{...axStyle},yaxis:{...axStyle},zaxis:{...axStyle},bgcolor:'#14141e'},margin:{t:10,b:10,l:10,r:10}});
+  }
+
+  if(document.getElementById('g-cone')){
+    const xs=rng(30,-3,3),ys=rng(30,-3,3);
+    const z=meshgrid(xs,ys,(x,y)=>Math.sqrt(x*x/4+y*y/9));
+    const z2=meshgrid(xs,ys,(x,y)=>-Math.sqrt(x*x/4+y*y/9));
+    Plotly.newPlot('g-cone',[
+      {type:'surface',x:xs,y:ys,z:z,colorscale:[[0,'#2a1a1a'],[1,'#e06c75']],showscale:false,opacity:0.85},
+      {type:'surface',x:xs,y:ys,z:z2,colorscale:[[0,'#2a1a1a'],[1,'#e06c75']],showscale:false,opacity:0.85}
+    ],{...dark,scene:{xaxis:{...axStyle},yaxis:{...axStyle},zaxis:{...axStyle},bgcolor:'#14141e'},margin:{t:10,b:10,l:10,r:10}});
+  }
+
+  if(document.getElementById('g-hyp2')){
+    const xs=rng(30,-3,3),ys=rng(30,-3,3);
+    const zp=meshgrid(xs,ys,(x,y)=>{const v=1+x*x+y*y;return 2*Math.sqrt(v);});
+    const zn=meshgrid(xs,ys,(x,y)=>{const v=1+x*x+y*y;return -2*Math.sqrt(v);});
+    Plotly.newPlot('g-hyp2',[
+      {type:'surface',x:xs,y:ys,z:zp,colorscale:[[0,'#1a2a1a'],[1,'#5fad8a']],showscale:false,opacity:0.85},
+      {type:'surface',x:xs,y:ys,z:zn,colorscale:[[0,'#1a2a1a'],[1,'#5fad8a']],showscale:false,opacity:0.85}
+    ],{...dark,scene:{xaxis:{...axStyle},yaxis:{...axStyle},zaxis:{...axStyle},bgcolor:'#14141e'},margin:{t:10,b:10,l:10,r:10}});
+  }
+
+  if(document.getElementById('g-saddle')){
+    const xs=rng(30,-3,3),ys=rng(30,-3,3);
+    const z=meshgrid(xs,ys,(x,y)=>y*y-x*x);
+    Plotly.newPlot('g-saddle',[{type:'surface',x:xs,y:ys,z:z,colorscale:[[0,'#2a1e10'],[0.5,'#7c6fcd'],[1,'#e8c97a']],showscale:false,opacity:0.9}],
+    {...dark,scene:{xaxis:{...axStyle},yaxis:{...axStyle},zaxis:{...axStyle},bgcolor:'#14141e'},margin:{t:10,b:10,l:10,r:10}});
+  }
+
+  if(document.getElementById('g-eparab')){
+    const xs=rng(30,-3,3),ys=rng(30,-3,3);
+    const z=meshgrid(xs,ys,(x,y)=>x*x+y*y/4);
+    Plotly.newPlot('g-eparab',[{type:'surface',x:xs,y:ys,z:z,colorscale:[[0,'#1a1e2a'],[1,'#c9a84c']],showscale:false,opacity:0.9}],
+    {...dark,scene:{xaxis:{...axStyle},yaxis:{...axStyle},zaxis:{...axStyle},bgcolor:'#14141e'},margin:{t:10,b:10,l:10,r:10}});
+  }
+}
+</script>
+</body>
+</html>
